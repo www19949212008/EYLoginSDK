@@ -23,10 +23,12 @@ open class EYLoginSDKManager: NSObject {
     private var showingVc: UIViewController?
     open var rootViewController: UIViewController?
     
+    @objc
     open class func shared() -> EYLoginSDKManager {
         return instance
     }
     
+    @objc
     open func initializeSDK() {
         isInit = true
         if EYLoginSDKManager.autoLogin {
@@ -34,6 +36,7 @@ open class EYLoginSDKManager: NSObject {
         }
     }
     
+    @objc
     open func login() {
         delegate?.loginMangaerStartCheckLoginState()
         //checking
