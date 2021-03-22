@@ -1,0 +1,6 @@
+framework module EYLoginSDK {
+  umbrella header "EYLoginSDK-umbrella.h"
+
+  export *
+  module * { export * }
+}

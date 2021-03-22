@@ -1,0 +1,18 @@
+PODS:
+  - EYLoginSDK (1.0.0):
+    - EYLoginSDK/Core (= 1.0.0)
+  - EYLoginSDK/Core (1.0.0)
+
+DEPENDENCIES:
+  - EYLoginSDK (from `../`)
+
+EXTERNAL SOURCES:
+  EYLoginSDK:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  EYLoginSDK: 8838f18e1ec773de2e4e94fec8ae678de3439e15
+
+PODFILE CHECKSUM: f08788f8497f8149d7fc0faecc71ab8c4bfb7c7d
+
+COCOAPODS: 1.10.0
