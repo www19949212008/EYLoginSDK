@@ -5,6 +5,7 @@
 //  Created by eric on 2021/3/19.
 //
 
+@objc
 public protocol EYLoginDelegate: AnyObject {
     func loginMangaerStartCheckLoginState()
     func loginManagerDidFinishCheckLoginState(loginState: Int)

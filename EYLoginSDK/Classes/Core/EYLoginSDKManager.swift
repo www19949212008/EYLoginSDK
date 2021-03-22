@@ -7,7 +7,8 @@
 
 import UIKit
 
-open class EYLoginSDKManager {
+@objc
+open class EYLoginSDKManager: NSObject {
     private static var instance = EYLoginSDKManager()
     
     open weak var delegate: EYLoginDelegate?
