@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
     # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
     #s.license          = { :type => 'MIT', :file => 'LICENSE' }
     s.author           = { 'Tangmingding' => 'erictang@eyugame.com' }
-    s.source           = { :git => 'https://github.com/EyugameQy/EyuLibrary-ios.git', :tag => s.version.to_s }
+    s.source           = { :git => 'https://github.com/www19949212008/EYLoginSDK.git', :tag => s.version.to_s }
     #s.prefix_header_file = 'EyuLibrary-ios/Classes/PrefixHeader.pch'
     s.ios.deployment_target = '10.0'
     s.static_framework = true
