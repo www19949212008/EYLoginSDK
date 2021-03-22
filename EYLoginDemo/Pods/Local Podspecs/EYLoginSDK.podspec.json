@@ -2,13 +2,14 @@
   "name": "EYLoginSDK",
   "version": "1.0.0",
   "summary": "A short description of EYLoginSDK.",
+  "swift_versions": "5.0",
   "description": "EyuLibrary",
   "homepage": "https://github.com/EyugameQy/EyuLibrary-ios",
   "authors": {
     "Tangmingding": "erictang@eyugame.com"
   },
   "source": {
-    "git": "https://github.com/EyugameQy/EyuLibrary-ios.git",
+    "git": "https://github.com/www19949212008/EYLoginSDK.git",
     "tag": "1.0.0"
   },
   "platforms": {
@@ -20,5 +21,6 @@
       "name": "Core",
       "source_files": "EYLoginSDK/Classes/Core/**/*"
     }
-  ]
+  ],
+  "swift_version": "5.0"
 }
