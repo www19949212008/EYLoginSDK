@@ -23,4 +23,8 @@ Pod::Spec.new do |s|
     s.subspec 'Core' do |c|
         c.source_files = 'EYLoginSDK/Classes/Core/**/*'
     end
+    
+    s.subspec 'Basic' do |b|
+        c.source_files = 'EYLoginSDK/Classes/Basic/**/*'
+    end
 end

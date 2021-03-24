@@ -7,11 +7,6 @@
 
 import UIKit
 
-let screenWidth = UIScreen.main.bounds.size.width
-let screenHeight = UIScreen.main.bounds.size.height
-let buttonThemeColorNormol = UIColor(red: 255/255.0, green: 91/255.0, blue: 36/255.0, alpha: 1)
-let buttonThemeColorDisabled = UIColor(red: 255/255.0, green: 140/255.0, blue: 89/255.0, alpha: 1)
-
 class EYLoginBaseViewController: UIViewController {
     var titleString: String {
         return ""

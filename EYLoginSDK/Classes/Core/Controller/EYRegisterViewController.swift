@@ -69,6 +69,27 @@ class EYRegisterViewController: EYLoginBaseViewController {
     
     @objc
     func registerAction() {
-        EYLoginSDKManager.shared().changeToAuthentication()
+        let params = ["username": accountTextField.text ?? "", "password": passwordTextField ?? "", "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+        EYNetworkService.sendRequstWith(method: .post, urlString: "http://xx.com/user/register", params: params) { (isSuccess, data, error) in
+            if isSuccess {
+                let uid = data?["uid"] as? Int
+                let status = data?["status"] as? Int
+                let auth = data?["auth"] as? Int
+                UserDefaults.standard.setValue(uid, forKey: userIdentifier)
+                if auth == 0 {
+                    UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
+                    UserDefaults.standard.synchronize()
+                    EYLoginSDKManager.shared().changeToAuthentication()
+                } else if status == 1 {
+                    EYLoginSDKManager.shared().loginSuccess()
+                } else {
+                    UserDefaults.standard.setValue(EYLoginState.registed.rawValue, forKey: loginStateIdentifier)
+                    UserDefaults.standard.synchronize()
+                    EYLoginSDKManager.shared().changeToLogin()
+                }
+            } else {
+                debugLog(message: "register error:", error.debugDescription)
+            }
+        }
     }
 }

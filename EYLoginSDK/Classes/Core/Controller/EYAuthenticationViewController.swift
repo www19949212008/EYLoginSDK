@@ -48,6 +48,13 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
     }
     
     @objc func commitAction() {
-        
+        let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey, "idCard": idTextField.text ?? "", "name": nameTextField.text ?? ""] as [String : Any]
+        EYNetworkService.sendRequstWith(method: .post, urlString: "http://xx.com/user/auth", params: params) { (isSuccess, data, error) in
+            if isSuccess {
+                EYLoginSDKManager.shared().loginSuccess()
+            } else {
+                debugLog(message: error.debugDescription)
+            }
+        }
     }
 }
