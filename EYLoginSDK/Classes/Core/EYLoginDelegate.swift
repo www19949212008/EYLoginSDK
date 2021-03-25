@@ -7,11 +7,11 @@
 
 @objc
 public protocol EYLoginDelegate: AnyObject {
-    func loginMangaerStartCheckLoginState()
-    func loginManagerDidFinishCheckLoginState(loginState: Int)
-    func loginManagerDidFinishCheckLoginStateWithError(error: Error)
+    func loginManagerDidGetLoginState(loginState: Int)
     func loginManagerWillShowLoginPage()
     func loginManagerDidShowLoginPage()
     func loginManagerDidLogin(loginState: Int)
     func loginManagerLoginWithError(error: Error)
+    func loginManagerLogoutWithError(error: Error)
+    func loginManagerDidLogout(loginState: Int)
 }

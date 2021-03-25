@@ -14,6 +14,7 @@ open class EYLoginSDKManager: NSObject {
     @objc
     open weak var delegate: EYLoginDelegate?
     
+    @objc
     public static var autoLogin = true
     
     var isInit = false
@@ -52,15 +53,18 @@ open class EYLoginSDKManager: NSObject {
     
     @objc
     open func login() {
-        delegate?.loginMangaerStartCheckLoginState()
-        //checking
-        
-        delegate?.loginManagerDidFinishCheckLoginState(loginState: loginState)
-        switch loginState {
+        var state = loginState
+        let uid = UserDefaults.standard.string(forKey: userIdentifier)
+        if uid?.count == 0 && state == EYLoginState.logined.rawValue {
+            UserDefaults.standard.setValue(EYLoginState.notLogin.rawValue, forKey: loginStateIdentifier)
+            state = EYLoginState.notLogin.rawValue
+        }
+        delegate?.loginManagerDidGetLoginState(loginState: state)
+        switch state {
         case EYLoginState.notLogin.rawValue:
             showLoginPage()
         case EYLoginState.logined.rawValue:
-            self.uid = UserDefaults.standard.string(forKey: userIdentifier) ?? ""
+            self.uid = uid ?? ""
             delegate?.loginManagerDidLogin(loginState: loginState)
         case EYLoginState.registed.rawValue:
             showLoginPage()
@@ -150,6 +154,27 @@ open class EYLoginSDKManager: NSObject {
     
     @objc
     open func logOut() {
+        let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+        EYNetworkService.sendRequstWith(method: .post, urlString: "http://xx.com/user/offline", params: params) { (isSuccess, data, error) in
+            if isSuccess {
+                self.unregistUserInfo()
+                self.invalidBackgroundThread()
+                self.delegate?.loginManagerDidLogout(loginState: self.loginState)
+            } else {
+                debugLog(message: error.debugDescription)
+                self.delegate?.loginManagerLogoutWithError(error: error ?? NSError())
+            }
+        }
+    }
+    
+    func unregistUserInfo() {
+        self.uid = ""
+        UserDefaults.standard.setValue(0, forKey: loginStateIdentifier)
+        UserDefaults.standard.setValue(nil, forKey: userIdentifier)
+        UserDefaults.standard.synchronize()
+    }
+    
+    func invalidBackgroundThread() {
         if let t = thread {
             self.perform(#selector(self.exitThread), on: t, with: nil, waitUntilDone: true)
             thread = nil
