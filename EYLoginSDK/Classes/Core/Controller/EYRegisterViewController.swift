@@ -13,6 +13,7 @@ class EYRegisterViewController: EYLoginBaseViewController {
     private var re_passwordTextField: UITextField!
     private var registerButton: UIButton!
     private var toLoginButton: UIButton!
+    private let hud = ProgressHud()
     
     override var titleString: String {
         return "注册"
@@ -69,12 +70,15 @@ class EYRegisterViewController: EYLoginBaseViewController {
     
     @objc
     func registerAction() {
-        let params = ["username": accountTextField.text ?? "", "password": passwordTextField ?? "", "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-        EYNetworkService.sendRequstWith(method: .post, urlString: "http://xx.com/user/register", params: params) { (isSuccess, data, error) in
+        let params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "deviceType": "ios", "deviceId": NSUUID().uuidString] as [String : Any]
+        hud.showAnimatedHud()
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/register", params: params) { (isSuccess, data, error) in
+            self.hud.stopAnimatedHud()
             if isSuccess {
-                let uid = data?["uid"] as? Int
-                let status = data?["status"] as? Int
-                let auth = data?["auth"] as? Int
+                let d = data?["data"] as? [String: Any]
+                let uid = d?["uid"] as? Int
+                let status = d?["status"] as? Int
+                let auth = d?["auth"] as? Int
                 UserDefaults.standard.setValue(uid, forKey: userIdentifier)
                 if auth == 0 {
                     UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)

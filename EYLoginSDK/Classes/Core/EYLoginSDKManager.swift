@@ -146,7 +146,7 @@ open class EYLoginSDKManager: NSObject {
         }
         timer = Timer(timeInterval: 10, repeats: true) { (_) in
             let params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-            EYNetworkService.sendRequstWith(method: .post, urlString: "http://xx.com/user/heartbeat", params: params) { (_, _, _) in }
+            EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/heartbeat", params: params) { (_, _, _) in }
         }
         RunLoop.current.add(timer!, forMode: .default)
         timer?.fire()
@@ -155,7 +155,7 @@ open class EYLoginSDKManager: NSObject {
     @objc
     open func logOut() {
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-        EYNetworkService.sendRequstWith(method: .post, urlString: "http://xx.com/user/offline", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/offline", params: params) { (isSuccess, data, error) in
             if isSuccess {
                 self.unregistUserInfo()
                 self.invalidBackgroundThread()

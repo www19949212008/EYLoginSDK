@@ -36,7 +36,7 @@ class EYNetworkService {
             request.httpMethod = "GET"
         } else {
             request.httpMethod = "POST"
-            request.httpBody = instance.buildParams(params ?? [:]).data(using: .utf8)
+            request.httpBody = try? JSONSerialization.data(withJSONObject: params ?? [:], options: .fragmentsAllowed)//instance.buildParams(params ?? [:]).data(using: .utf8)
         }
         EYUrlRequestHandler.instance.sendRequest(request: request) { (data, error) in
             if error != nil {
@@ -45,7 +45,7 @@ class EYNetworkService {
                 let dataMap = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
                 let code = dataMap?["code"] as? Int
                 if code == 200 {
-                    completeHandler(true, dataMap?["data"] as? [String: Any], nil)
+                    completeHandler(true, dataMap, nil)
                 } else {
                     completeHandler(false, nil, NSError(domain: "requstErrorDomain", code: code ?? 0, userInfo: nil))
                 }

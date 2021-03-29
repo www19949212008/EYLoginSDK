@@ -58,11 +58,12 @@ class EYLoginViewController: EYLoginBaseViewController {
     @objc
     func loginButtonAction() {
         let params = ["username": accountTextField.text ?? "", "password": passwordTextField ?? "", "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-        EYNetworkService.sendRequstWith(method: .post, urlString: "http://xx.com/user/login", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/login", params: params) { (isSuccess, data, error) in
             if isSuccess {
-                let uid = data?["uid"] as? Int
-                let status = data?["status"] as? Int
-                let auth = data?["auth"] as? Int
+                let d = data?["data"] as? [String: Any]
+                let uid = d?["uid"] as? Int
+                let status = d?["status"] as? Int
+                let auth = d?["auth"] as? Int
                 UserDefaults.standard.setValue(uid, forKey: userIdentifier)
                 if auth == 0 {
                     UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
