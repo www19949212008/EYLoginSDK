@@ -12,6 +12,7 @@ class EYLoginViewController: EYLoginBaseViewController {
     private var passwordTextField: UITextField!
     private var loginButton: UIButton!
     private var toRegisterButton: UIButton!
+    private let hud = ProgressHud()
     
     override var titleString: String {
         return "账号登陆"
@@ -19,6 +20,7 @@ class EYLoginViewController: EYLoginBaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ProgressHud.showTextHud("暂时无法登陆")
         accountTextField = self.createTextField(placeHold: " 请输入您的账号")
         accountTextField.frame = CGRect(x: 15, y: UIApplication.shared.statusBarFrame.height + 200, width: screenWidth-30, height: 45)
         view.addSubview(accountTextField)
@@ -57,9 +59,11 @@ class EYLoginViewController: EYLoginBaseViewController {
     
     @objc
     func loginButtonAction() {
-        let params = ["username": accountTextField.text ?? "", "password": passwordTextField ?? "", "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+        let params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+        hud.showAnimatedHud()
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/login", params: params) { (isSuccess, data, error) in
-            if isSuccess {
+            self.hud.stopAnimatedHud()
+            if isSuccess || data?["code"] as? Int == 1004  {
                 let d = data?["data"] as? [String: Any]
                 let uid = d?["uid"] as? Int
                 let status = d?["status"] as? Int
@@ -72,9 +76,14 @@ class EYLoginViewController: EYLoginBaseViewController {
                 } else if status == 1 {
                     EYLoginSDKManager.shared().loginSuccess()
                 } else {
-                    
+                    ProgressHud.showTextHud("暂时无法登陆，请稍后重试")
                 }
             } else {
+                if let e = error {
+                    ProgressHud.showTextHud("登陆失败，请稍后重试 error code:\((e as NSError).code)")
+                } else {
+                    ProgressHud.showTextHud("登陆失败，请稍后重试")
+                }
                 debugLog(message: "login error:", error.debugDescription)
             }
         }

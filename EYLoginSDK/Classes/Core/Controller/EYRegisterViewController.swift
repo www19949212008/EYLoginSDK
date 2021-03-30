@@ -78,9 +78,9 @@ class EYRegisterViewController: EYLoginBaseViewController {
                 let d = data?["data"] as? [String: Any]
                 let uid = d?["uid"] as? Int
                 let status = d?["status"] as? Int
-                let auth = d?["auth"] as? Int
+                let auth = d?["needauth"] as? Int
                 UserDefaults.standard.setValue(uid, forKey: userIdentifier)
-                if auth == 0 {
+                if auth == 1 {
                     UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
                     UserDefaults.standard.synchronize()
                     EYLoginSDKManager.shared().changeToAuthentication()
@@ -92,6 +92,11 @@ class EYRegisterViewController: EYLoginBaseViewController {
                     EYLoginSDKManager.shared().changeToLogin()
                 }
             } else {
+                if let e = error {
+                    ProgressHud.showTextHud("注册失败，请稍后重试 error code:\((e as NSError).code)")
+                } else {
+                    ProgressHud.showTextHud("注册失败，请稍后重试")
+                }
                 debugLog(message: "register error:", error.debugDescription)
             }
         }

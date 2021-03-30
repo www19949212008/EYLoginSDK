@@ -12,10 +12,11 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
     private var nameTextField: UITextField!
     private var idTextField: UITextField!
     private var commitButton: UIButton!
+    private let hud = ProgressHud()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         nameTextField = self.createTextField(placeHold: " 请输入您的姓名")
         nameTextField.frame = CGRect(x: 15, y: UIApplication.shared.statusBarFrame.height + 200, width: screenWidth-30, height: 45)
         view.addSubview(nameTextField)
@@ -49,12 +50,23 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
     
     @objc func commitAction() {
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey, "idCard": idTextField.text ?? "", "name": nameTextField.text ?? ""] as [String : Any]
+        hud.showAnimatedHud()
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/auth", params: params) { (isSuccess, data, error) in
+            self.hud.stopAnimatedHud()
             if isSuccess {
                 EYLoginSDKManager.shared().loginSuccess()
             } else {
                 if data?["code"] as? Int == 1005 {
-                    
+                    ProgressHud.showTextHud("暂时无法登陆")
+                    UserDefaults.standard.setValue(EYLoginState.registed.rawValue, forKey: loginStateIdentifier)
+                    UserDefaults.standard.synchronize()
+                    EYLoginSDKManager.shared().changeToLogin()
+                } else {
+                    if let e = error {
+                        ProgressHud.showTextHud("请求失败，请稍后重试 error code:\((e as NSError).code)")
+                    } else {
+                        ProgressHud.showTextHud("请求失败，请稍后重试")
+                    }
                 }
                 debugLog(message: error.debugDescription)
             }

@@ -22,6 +22,7 @@ class ProgressHud: UIView {
     }
     
     func setupUI() {
+        self.translatesAutoresizingMaskIntoConstraints = false
         addSubview(textLabel)
         textLabel.textAlignment = .center
         textLabel.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
@@ -37,7 +38,6 @@ class ProgressHud: UIView {
         let constraint3 = NSLayoutConstraint(item: textLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: screenWidth-40)
         self.addConstraints([constraint1, constraint2, constraint3])
         
-        self.translatesAutoresizingMaskIntoConstraints = false
         hud.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hud)
         hud.isHidden = true
@@ -53,6 +53,9 @@ class ProgressHud: UIView {
     
     func showText(_ text: String) {
         textLabel.text = text
+        if textLabel.frame == CGRect.zero {
+            textLabel.sizeToFit()
+        }
         UIApplication.shared.keyWindow?.addSubview(self)
         let constraint1 = NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: UIApplication.shared.keyWindow, attribute: .centerX, multiplier: 1, constant: 0)
         let constraint2 = NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: UIApplication.shared.keyWindow, attribute: .centerY, multiplier: 1, constant: 0)

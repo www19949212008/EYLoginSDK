@@ -146,10 +146,52 @@ open class EYLoginSDKManager: NSObject {
         }
         timer = Timer(timeInterval: 10, repeats: true) { (_) in
             let params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-            EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/heartbeat", params: params) { (_, _, _) in }
+            EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/heartbeat", params: params) { (isSuccess, data, error) in
+                let code = data?["code"] as? Int
+                switch code {
+                case 1002,1003,1006:
+                    self.invalidBackgroundThread()
+                    self.showLoginAlert()
+                case 1004,1007:
+                    self.invalidBackgroundThread()
+                    self.showAuthAlert()
+                case 1005:
+                    self.invalidBackgroundThread()
+                    self.showExitAlert()
+                default:
+                    break
+                }
+            }
         }
         RunLoop.current.add(timer!, forMode: .default)
         timer?.fire()
+    }
+    
+    func showExitAlert() {
+        let vc = UIAlertController(title: nil, message: "您今天该时段无法进行游戏，请稍后再试", preferredStyle: .alert)
+        let action = UIAlertAction(title: "确定", style: .default) { (_) in
+            abort()
+        }
+        vc.addAction(action)
+        rootViewController?.present(vc, animated: true, completion: nil)
+    }
+    
+    func showAuthAlert() {
+        let vc = UIAlertController(title: nil, message: "您还未进行实名认证，请先进行实名认证", preferredStyle: .alert)
+        let action = UIAlertAction(title: "确定", style: .default) { (_) in
+            self.changeToAuthentication()
+        }
+        vc.addAction(action)
+        rootViewController?.present(vc, animated: true, completion: nil)
+    }
+    
+    func showLoginAlert() {
+        let vc = UIAlertController(title: nil, message: "登陆信息验证失败，请重新登录", preferredStyle: .alert)
+        let action = UIAlertAction(title: "确定", style: .default) { (_) in
+            self.changeToLogin()
+        }
+        vc.addAction(action)
+        rootViewController?.present(vc, animated: true, completion: nil)
     }
     
     @objc
