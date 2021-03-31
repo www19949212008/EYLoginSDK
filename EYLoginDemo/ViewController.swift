@@ -63,5 +63,9 @@ class ViewController: UIViewController, EYRechagerDelegate {
     func loginManagerUploadUserRechageInfoWithError(error: Error?, message: String?) {
         print("上传失败：", error.debugDescription, message)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+    }
 }
 

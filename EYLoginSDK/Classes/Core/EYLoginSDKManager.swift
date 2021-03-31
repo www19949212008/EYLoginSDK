@@ -49,10 +49,30 @@ open class EYLoginSDKManager: NSObject {
         self.appkey = appkey
         UserDefaults.standard.register(defaults: [loginStateIdentifier: 0])
         isInit = true
+//        addObserver()
         if EYLoginSDKManager.autoLogin {
             login()
         }
     }
+    
+//    func addObserver() {
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+//    }
+    
+//    @objc func didEnterBackground() {
+//        if self.loginState != 1 {
+//            return
+//        }
+//
+//    }
+//
+//    @objc func willEnterForeground() {
+//        if self.loginState != 1 {
+//            return
+//        }
+//
+//    }
     
     @objc
     open func login() {
@@ -233,8 +253,19 @@ open class EYLoginSDKManager: NSObject {
         timer = nil
     }
     
+    @objc
+    func stopTimer() {
+        CFRunLoopStop(RunLoop.current.getCFRunLoop())
+    }
+
+    @objc
+    func reStartTimer() {
+//        RunLoop.current.run()
+    }
+    
     @objc func exitThread() {
-        Thread.exit()
+//        CFRunLoopStop(RunLoop.current.getCFRunLoop())
+//        Thread.exit()
     }
     
     @objc
