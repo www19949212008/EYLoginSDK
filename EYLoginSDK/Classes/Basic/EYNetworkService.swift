@@ -20,7 +20,7 @@ class EYNetworkService {
             completeHandler(false, nil, NSError(domain: "NetworkUrlErrorDoamin", code: -1000, userInfo: nil))
             return
         }
-        let request = NSMutableURLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10)
+        let request = NSMutableURLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 15)
         if method == .get {
             var i = 0
             for (key, value) in (params ?? [:]) {

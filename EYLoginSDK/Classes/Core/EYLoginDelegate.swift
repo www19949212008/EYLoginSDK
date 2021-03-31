@@ -15,3 +15,11 @@ public protocol EYLoginDelegate: AnyObject {
     func loginManagerLogoutWithError(error: Error)
     func loginManagerDidLogout(loginState: Int)
 }
+
+@objc
+public protocol EYRechagerDelegate: AnyObject {
+    func loginManagerDidGetUserRechageInfo(rechargeInfo: [String: Any])
+    func loginManagerGetUserRechageInfoWithError(error: Error?, message: String?)
+    func loginManagerDidUploadUserRechageInfo()
+    func loginManagerUploadUserRechageInfoWithError(error: Error?, message: String?)
+}

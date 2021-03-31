@@ -17,11 +17,11 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        nameTextField = self.createTextField(placeHold: " 请输入您的姓名")
+        nameTextField = self.createTextField(placeHold: "请输入您的姓名")
         nameTextField.frame = CGRect(x: 15, y: UIApplication.shared.statusBarFrame.height + 200, width: screenWidth-30, height: 45)
         view.addSubview(nameTextField)
         
-        idTextField = self.createTextField(placeHold: " 请输入您的身份证号码")
+        idTextField = self.createTextField(placeHold: "请输入您的身份证号码")
         idTextField.frame = CGRect(x: 15, y: nameTextField.frame.maxY + 10, width: screenWidth-30, height: 45)
         idTextField.keyboardType = .numberPad
         view.addSubview(idTextField)
@@ -57,16 +57,12 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
                 EYLoginSDKManager.shared().loginSuccess()
             } else {
                 if data?["code"] as? Int == 1005 {
-                    ProgressHud.showTextHud("暂时无法登陆")
+                    ProgressHud.showTextHud(data?["message"] as? String ?? "实名认证成功，该时间段暂时无法登陆")
                     UserDefaults.standard.setValue(EYLoginState.registed.rawValue, forKey: loginStateIdentifier)
                     UserDefaults.standard.synchronize()
                     EYLoginSDKManager.shared().changeToLogin()
                 } else {
-                    if let e = error {
-                        ProgressHud.showTextHud("请求失败，请稍后重试 error code:\((e as NSError).code)")
-                    } else {
-                        ProgressHud.showTextHud("请求失败，请稍后重试")
-                    }
+                    ProgressHud.showTextHud(data?["message"] as? String ?? "身份信息验证失败，请稍后重试")
                 }
                 debugLog(message: error.debugDescription)
             }

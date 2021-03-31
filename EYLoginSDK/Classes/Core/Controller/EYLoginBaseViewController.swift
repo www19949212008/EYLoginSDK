@@ -41,6 +41,9 @@ class EYLoginBaseViewController: UIViewController {
     
     func createTextField(placeHold: String) -> UITextField {
         let textField = UITextField()
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 45))
+        textField.leftView = paddingView
+        textField.leftViewMode = .always
         textField.placeholder = placeHold
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.borderStyle = .none

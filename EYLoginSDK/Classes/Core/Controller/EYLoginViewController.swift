@@ -21,13 +21,14 @@ class EYLoginViewController: EYLoginBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ProgressHud.showTextHud("暂时无法登陆")
-        accountTextField = self.createTextField(placeHold: " 请输入您的账号")
+        accountTextField = self.createTextField(placeHold: "请输入您的账号")
         accountTextField.frame = CGRect(x: 15, y: UIApplication.shared.statusBarFrame.height + 200, width: screenWidth-30, height: 45)
         view.addSubview(accountTextField)
         
-        passwordTextField = self.createTextField(placeHold: " 请输入您的密码")
+        passwordTextField = self.createTextField(placeHold: "请输入您的密码")
         passwordTextField.isSecureTextEntry = true
         passwordTextField.frame = CGRect(x: 15, y: accountTextField.frame.maxY + 10, width: screenWidth-30, height: 45)
+        passwordTextField.keyboardType = .asciiCapable
         view.addSubview(passwordTextField)
         
         loginButton = self.createOrangeButton(title: "登陆")
@@ -76,14 +77,10 @@ class EYLoginViewController: EYLoginBaseViewController {
                 } else if status == 1 {
                     EYLoginSDKManager.shared().loginSuccess()
                 } else {
-                    ProgressHud.showTextHud("暂时无法登陆，请稍后重试")
+                    ProgressHud.showTextHud(data?["message"] as? String ?? "暂时无法登陆，请稍后重试")
                 }
             } else {
-                if let e = error {
-                    ProgressHud.showTextHud("登陆失败，请稍后重试 error code:\((e as NSError).code)")
-                } else {
-                    ProgressHud.showTextHud("登陆失败，请稍后重试")
-                }
+                ProgressHud.showTextHud(data?["message"] as? String ?? "登陆失败，请稍后重试")
                 debugLog(message: "login error:", error.debugDescription)
             }
         }

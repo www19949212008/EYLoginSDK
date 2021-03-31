@@ -21,17 +21,19 @@ class EYRegisterViewController: EYLoginBaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        accountTextField = self.createTextField(placeHold: " 请输入您的账号")
+        accountTextField = self.createTextField(placeHold: "请输入您的账号")
         accountTextField.frame = CGRect(x: 15, y: UIApplication.shared.statusBarFrame.height + 200, width: screenWidth-30, height: 45)
         view.addSubview(accountTextField)
         
-        passwordTextField = self.createTextField(placeHold: " 请输入您的密码")
+        passwordTextField = self.createTextField(placeHold: "请输入您的密码")
         passwordTextField.isSecureTextEntry = true
+        passwordTextField.keyboardType = .asciiCapable
         passwordTextField.frame = CGRect(x: 15, y: accountTextField.frame.maxY + 10, width: screenWidth-30, height: 45)
         view.addSubview(passwordTextField)
         
-        re_passwordTextField = self.createTextField(placeHold: " 请输入您的密码")
+        re_passwordTextField = self.createTextField(placeHold: "请输入您的密码")
         re_passwordTextField.isSecureTextEntry = true
+        re_passwordTextField.keyboardType = .asciiCapable
         re_passwordTextField.frame = CGRect(x: 15, y: passwordTextField.frame.maxY + 10, width: screenWidth-30, height: 45)
         view.addSubview(re_passwordTextField)
         
@@ -92,11 +94,7 @@ class EYRegisterViewController: EYLoginBaseViewController {
                     EYLoginSDKManager.shared().changeToLogin()
                 }
             } else {
-                if let e = error {
-                    ProgressHud.showTextHud("注册失败，请稍后重试 error code:\((e as NSError).code)")
-                } else {
-                    ProgressHud.showTextHud("注册失败，请稍后重试")
-                }
+                ProgressHud.showTextHud(data?["message"] as? String ?? "注册失败，请稍后重试")
                 debugLog(message: "register error:", error.debugDescription)
             }
         }

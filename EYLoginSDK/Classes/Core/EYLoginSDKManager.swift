@@ -15,6 +15,9 @@ open class EYLoginSDKManager: NSObject {
     open weak var delegate: EYLoginDelegate?
     
     @objc
+    open weak var rechagerDelegate: EYRechagerDelegate?
+    
+    @objc
     public static var autoLogin = true
     
     var isInit = false
@@ -65,6 +68,7 @@ open class EYLoginSDKManager: NSObject {
             showLoginPage()
         case EYLoginState.logined.rawValue:
             self.uid = uid ?? ""
+            startHeartbeat()
             delegate?.loginManagerDidLogin(loginState: loginState)
         case EYLoginState.registed.rawValue:
             showLoginPage()
@@ -163,7 +167,8 @@ open class EYLoginSDKManager: NSObject {
                 }
             }
         }
-        RunLoop.current.add(timer!, forMode: .default)
+        RunLoop.current.add(timer!, forMode: .common)
+        RunLoop.current.run()
         timer?.fire()
     }
     
@@ -196,6 +201,9 @@ open class EYLoginSDKManager: NSObject {
     
     @objc
     open func logOut() {
+        if loginState != 1 {
+            return
+        }
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/offline", params: params) { (isSuccess, data, error) in
             if isSuccess {
@@ -227,5 +235,34 @@ open class EYLoginSDKManager: NSObject {
     
     @objc func exitThread() {
         Thread.exit()
+    }
+    
+    @objc
+    open func queryUserRechage() {
+        let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/get_user_rechager", params: params) { (isSuccess, data, error) in
+            if isSuccess {
+                let mapData = data?["data"] as? [String: Any]
+                let single_recharge = mapData?["single_recharge"] as? Int ?? -1
+                let month_recharge = mapData?["month_recharge"] as? Int ?? -1
+                let month_recharge_total = mapData?["month_recharge_total"] as? Int ?? -1
+                let info = ["singleRecharge": single_recharge, "monthRecharge": month_recharge, "monthRechargeTotal": month_recharge_total] as [String: Any]
+                self.rechagerDelegate?.loginManagerDidGetUserRechageInfo(rechargeInfo: info)
+            } else {
+                self.rechagerDelegate?.loginManagerGetUserRechageInfoWithError(error: error, message: data?["message"] as? String)
+            }
+        }
+    }
+    
+    @objc
+    open func uploadUserRechageInfo(rechargeMoney: Int) {
+        let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey, "recharge_money": rechargeMoney] as [String : Any]
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/rechager", params: params) { (isSuccess, data, error) in
+            if isSuccess {
+                self.rechagerDelegate?.loginManagerDidUploadUserRechageInfo()
+            } else {
+                self.rechagerDelegate?.loginManagerUploadUserRechageInfoWithError(error: error, message: data?["message"] as? String)
+            }
+        }
     }
 }
