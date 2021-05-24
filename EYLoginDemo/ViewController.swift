@@ -12,6 +12,8 @@ class ViewController: UIViewController, EYRechagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        EYLoginSDKManager.shared().rootViewController = self
+        EYLoginSDKManager.shared().delegate = self
         EYLoginSDKManager.shared().rechagerDelegate = self
         
         let logoutBtn = UIButton()
