@@ -15,6 +15,9 @@ class EYRegisterViewController: EYLoginBaseViewController {
     private var toLoginButton: UIButton!
     private let hud = ProgressHud()
     
+    private var nameTextField: UITextField?
+    private var idTextField: UITextField?
+    
     override var titleString: String {
         return "注册"
     }
@@ -22,7 +25,12 @@ class EYRegisterViewController: EYLoginBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         accountTextField = self.createTextField(placeHold: "请输入您的账号")
-        accountTextField.frame = CGRect(x: 15, y: UIApplication.shared.statusBarFrame.height + 200, width: screenWidth-30, height: 45)
+        if EYLoginSDKManager.isTestMode {
+            accountTextField.frame = CGRect(x: 15, y: UIApplication.shared.statusBarFrame.height + 120, width: screenWidth-30, height: 45)
+        } else {
+            accountTextField.frame = CGRect(x: 15, y: UIApplication.shared.statusBarFrame.height + 200, width: screenWidth-30, height: 45)
+        }
+        
         view.addSubview(accountTextField)
         
         passwordTextField = self.createTextField(placeHold: "请输入您的密码")
@@ -37,11 +45,26 @@ class EYRegisterViewController: EYLoginBaseViewController {
         re_passwordTextField.frame = CGRect(x: 15, y: passwordTextField.frame.maxY + 10, width: screenWidth-30, height: 45)
         view.addSubview(re_passwordTextField)
         
+        
+        if EYLoginSDKManager.isTestMode {
+            nameTextField = self.createTextField(placeHold: "请输入您的姓名")
+            nameTextField?.frame = CGRect(x: 15, y: re_passwordTextField.frame.maxY + 10, width: screenWidth-30, height: 45)
+            view.addSubview(nameTextField!)
+            
+            idTextField = self.createTextField(placeHold: "请输入您的身份证号码")
+            idTextField?.frame = CGRect(x: 15, y: nameTextField!.frame.maxY + 10, width: screenWidth-30, height: 45)
+            view.addSubview(idTextField!)
+        }
+        
         registerButton = self.createOrangeButton(title: "注册")
         registerButton.backgroundColor = buttonThemeColorDisabled
         registerButton.isEnabled = false
         view.addSubview(registerButton)
-        registerButton.frame = CGRect(x: 15, y: re_passwordTextField.frame.maxY + 20, width: screenWidth-30, height: 50)
+        if EYLoginSDKManager.isTestMode {
+            registerButton.frame = CGRect(x: 15, y: idTextField!.frame.maxY + 20, width: screenWidth-30, height: 50)
+        } else {
+            registerButton.frame = CGRect(x: 15, y: re_passwordTextField.frame.maxY + 20, width: screenWidth-30, height: 50)
+        }
         
         toLoginButton = self.createOrangeButton(title: "已有账号，去登陆")
         view.addSubview(toLoginButton)
@@ -72,9 +95,17 @@ class EYRegisterViewController: EYLoginBaseViewController {
     
     @objc
     func registerAction() {
-        let params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "deviceType": "ios", "deviceId": NSUUID().uuidString] as [String : Any]
+        var params: [String : Any]
+        var url = ""
+        if EYLoginSDKManager.isTestMode {
+            url = "\(testHost)/user_edition/register"
+            params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "id_card": idTextField?.text ?? "", "realname": nameTextField?.text ?? ""]
+        } else {
+            url = "\(host)/user/register"
+            params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "deviceType": "ios", "deviceId": NSUUID().uuidString]
+        }
         hud.showAnimatedHud()
-        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/register", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
             if isSuccess {
                 let d = data?["data"] as? [String: Any]

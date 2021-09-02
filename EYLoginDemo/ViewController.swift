@@ -7,8 +7,8 @@
 
 import UIKit
 import EYLoginSDK
-class ViewController: UIViewController, EYRechagerDelegate {
-
+class ViewController: UIViewController, EYRechagerDelegate, EYLoginDelegate {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -67,6 +67,34 @@ class ViewController: UIViewController, EYRechagerDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        
+    }
+    
+    func loginManagerDidGetLoginState(loginState: Int) {
+        
+    }
+    
+    func loginManagerWillShowLoginPage() {
+        
+    }
+    
+    func loginManagerDidShowLoginPage() {
+        
+    }
+    
+    func loginManagerDidLogin(loginState: Int) {
+        
+    }
+    
+    func loginManagerLoginWithError(error: Error) {
+        
+    }
+    
+    func loginManagerLogoutWithError(error: Error) {
+        
+    }
+    
+    func loginManagerDidLogout(loginState: Int) {
         
     }
 }

@@ -44,11 +44,17 @@ open class EYLoginSDKManager: NSObject {
     private var thread: Thread?
     private var timer: Timer?
     
+    static var isTestMode = false
+    
     @objc
-    open func initializeSDK(appkey: String) {
+    open func initializeSDK(appkey: String, isTestMode: Bool = false) {
         self.appkey = appkey
         UserDefaults.standard.register(defaults: [loginStateIdentifier: 0])
         isInit = true
+        EYLoginSDKManager.isTestMode = isTestMode
+        if isTestMode {
+            requestHost = "\(testHost)/user_edition"
+        }
 //        addObserver()
         if EYLoginSDKManager.autoLogin {
             login()
@@ -169,8 +175,17 @@ open class EYLoginSDKManager: NSObject {
             timer = nil
         }
         timer = Timer(timeInterval: 10, repeats: true) { (_) in
-            let params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-            EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/heartbeat", params: params) { (isSuccess, data, error) in
+            var url = ""
+            let params: [String : Any]
+            if EYLoginSDKManager.isTestMode {
+                params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey, "second": "10"] as [String : Any]
+                url = "\(testHost)/user_edition/heartbeat"
+            } else {
+                params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+                url = "\(host)/user/heartbeat"
+            }
+            
+            EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
                 let code = data?["code"] as? Int
                 switch code {
                 case 1002,1003,1006:
@@ -225,7 +240,7 @@ open class EYLoginSDKManager: NSObject {
             return
         }
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/offline", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/offline", params: params) { (isSuccess, data, error) in
             if isSuccess {
                 self.unregistUserInfo()
                 self.invalidBackgroundThread()
@@ -271,7 +286,7 @@ open class EYLoginSDKManager: NSObject {
     @objc
     open func queryUserRechage() {
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/get_user_rechager", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/get_user_rechager", params: params) { (isSuccess, data, error) in
             if isSuccess {
                 let mapData = data?["data"] as? [String: Any]
                 let single_recharge = mapData?["single_recharge"] as? Int ?? -1
@@ -288,7 +303,7 @@ open class EYLoginSDKManager: NSObject {
     @objc
     open func uploadUserRechageInfo(rechargeMoney: Int) {
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey, "recharge_money": rechargeMoney] as [String : Any]
-        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/rechager", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/rechager", params: params) { (isSuccess, data, error) in
             if isSuccess {
                 self.rechagerDelegate?.loginManagerDidUploadUserRechageInfo()
             } else {

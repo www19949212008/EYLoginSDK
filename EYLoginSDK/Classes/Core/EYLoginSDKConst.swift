@@ -13,6 +13,8 @@ enum EYLoginState: Int {
 }
 
 let host = "http://192.168.184.97:8080"
+let testHost = "http://data-center-qy.eyugame.com:8980"
+var requestHost = "\(host)/user"
 
 let loginStateIdentifier = "EYLoginSDK_loginstate"
 let userIdentifier = "EYLoginSDK_userid"

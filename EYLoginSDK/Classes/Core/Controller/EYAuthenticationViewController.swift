@@ -23,7 +23,6 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
         
         idTextField = self.createTextField(placeHold: "请输入您的身份证号码")
         idTextField.frame = CGRect(x: 15, y: nameTextField.frame.maxY + 10, width: screenWidth-30, height: 45)
-        idTextField.keyboardType = .numberPad
         view.addSubview(idTextField)
         
         commitButton = self.createOrangeButton(title: "提交")
@@ -51,7 +50,7 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
     @objc func commitAction() {
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey, "idCard": idTextField.text ?? "", "name": nameTextField.text ?? ""] as [String : Any]
         hud.showAnimatedHud()
-        EYNetworkService.sendRequstWith(method: .post, urlString: "\(host)/user/auth", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/auth", params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
             if isSuccess {
                 EYLoginSDKManager.shared().loginSuccess()
