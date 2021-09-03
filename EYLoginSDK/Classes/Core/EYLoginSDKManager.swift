@@ -37,9 +37,9 @@ open class EYLoginSDKManager: NSObject {
         return instance
     }
     
-    private(set) var appkey = ""
+    open private(set) var appkey = ""
     
-    private(set) var uid = ""
+    open private(set) var uid = ""
     
     private var thread: Thread?
     private var timer: Timer?
@@ -291,7 +291,7 @@ open class EYLoginSDKManager: NSObject {
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/get_user_rechager", params: params) { (isSuccess, data, error) in
             if isSuccess {
                 let mapData = data?["data"] as? [String: Any]
-                let single_recharge = mapData?["single_recharge"] as? Int ?? -1
+                let  single_recharge = mapData?["single_recharge"] as? Int ?? -1
                 let month_recharge = mapData?["month_recharge"] as? Int ?? -1
                 let month_recharge_total = mapData?["month_recharge_total"] as? Int ?? -1
                 let info = ["singleRecharge": single_recharge, "monthRecharge": month_recharge, "monthRechargeTotal": month_recharge_total] as [String: Any]
