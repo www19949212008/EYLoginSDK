@@ -11,6 +11,7 @@ class EYLoginViewController: EYLoginBaseViewController {
     private var accountTextField: UITextField!
     private var passwordTextField: UITextField!
     private var loginButton: UIButton!
+    private var anonymousLoginButton: UIButton!
     private var toRegisterButton: UIButton!
     private let hud = ProgressHud()
     
@@ -37,14 +38,19 @@ class EYLoginViewController: EYLoginBaseViewController {
         view.addSubview(loginButton)
         loginButton.frame = CGRect(x: 15, y: passwordTextField.frame.maxY + 20, width: screenWidth-30, height: 50)
         
+        anonymousLoginButton = self.createOrangeButton(title: "游客登陆")
+        view.addSubview(anonymousLoginButton)
+        anonymousLoginButton.frame = CGRect(x: 15, y: loginButton.frame.maxY + 10, width: screenWidth-30, height: 50)
+        
         toRegisterButton = self.createOrangeButton(title: "没有账号，去注册")
         view.addSubview(toRegisterButton)
-        toRegisterButton.frame = CGRect(x: 15, y: loginButton.frame.maxY + 10, width: screenWidth-30, height: 50)
+        toRegisterButton.frame = CGRect(x: 15, y: anonymousLoginButton.frame.maxY + 10, width: screenWidth-30, height: 50)
         
         accountTextField.addTarget(self, action: #selector(self.textFieldDidChange(sender:)), for: .editingChanged)
         passwordTextField.addTarget(self, action: #selector(self.textFieldDidChange(sender:)), for: .editingChanged)
         toRegisterButton.addTarget(self, action: #selector(self.toRegisterButtonAction), for: .touchUpInside)
         loginButton.addTarget(self, action: #selector(self.loginButtonAction), for: .touchUpInside)
+        anonymousLoginButton.addTarget(self, action: #selector(self.anonymousLoginButtonAction), for: .touchUpInside)
     }
     
     @objc
@@ -60,7 +66,7 @@ class EYLoginViewController: EYLoginBaseViewController {
     
     @objc
     func loginButtonAction() {
-        let params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+        let params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "deviceType": "ios", "deviceId": NSUUID().uuidString] as [String : Any]
         hud.showAnimatedHud()
         var url = ""
         if EYLoginSDKManager.isTestMode {
@@ -71,16 +77,47 @@ class EYLoginViewController: EYLoginBaseViewController {
         EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
             if isSuccess || data?["code"] as? Int == 1004  {
+                EYLoginSDKManager.isAnonymous = false
                 let d = data?["data"] as? [String: Any]
                 let uid = d?["uid"] as? Int
                 let status = d?["status"] as? Int
-                let auth = d?["auth"] as? Int
+                let auth = d?["authstatus"] as? Int
                 UserDefaults.standard.setValue(uid, forKey: userIdentifier)
                 if auth == 0 {
                     UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
                     UserDefaults.standard.synchronize()
                     EYLoginSDKManager.shared().changeToAuthentication()
                 } else if status == 1 {
+                    EYLoginSDKManager.shared().loginSuccess()
+                } else {
+                    ProgressHud.showTextHud(data?["message"] as? String ?? "暂时无法登陆，请稍后重试")
+                }
+            } else {
+                ProgressHud.showTextHud(data?["message"] as? String ?? "登陆失败，请稍后重试")
+                debugLog(message: "login error:", error.debugDescription)
+            }
+        }
+    }
+    
+    @objc
+    func anonymousLoginButtonAction() {
+        let params = ["appkey": EYLoginSDKManager.shared().appkey, "deviceType": "ios", "deviceId": NSUUID().uuidString] as [String : Any]
+        hud.showAnimatedHud()
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/login", params: params) { (isSuccess, data, error) in
+            self.hud.stopAnimatedHud()
+            if isSuccess || data?["code"] as? Int == 1004  {
+                EYLoginSDKManager.isAnonymous = true
+                let d = data?["data"] as? [String: Any]
+                let uid = d?["uid"] as? Int
+                let status = d?["status"] as? Int
+//                let auth = d?["authstatus"] as? Int
+                UserDefaults.standard.setValue(uid, forKey: userIdentifier)
+//                if auth == 0 {
+//                    UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
+//                    UserDefaults.standard.synchronize()
+//                    EYLoginSDKManager.shared().changeToAuthentication()
+//                } else
+                if status == 1 {
                     EYLoginSDKManager.shared().loginSuccess()
                 } else {
                     ProgressHud.showTextHud(data?["message"] as? String ?? "暂时无法登陆，请稍后重试")

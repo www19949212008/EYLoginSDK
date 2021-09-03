@@ -44,7 +44,8 @@ open class EYLoginSDKManager: NSObject {
     private var thread: Thread?
     private var timer: Timer?
     
-    static var isTestMode = false
+    public static var isTestMode = false
+    public static var isAnonymous = false
     
     @objc
     open func initializeSDK(appkey: String, isTestMode: Bool = false) {
@@ -242,6 +243,7 @@ open class EYLoginSDKManager: NSObject {
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/offline", params: params) { (isSuccess, data, error) in
             if isSuccess {
+                EYLoginSDKManager.isAnonymous = false
                 self.unregistUserInfo()
                 self.invalidBackgroundThread()
                 self.delegate?.loginManagerDidLogout(loginState: self.loginState)

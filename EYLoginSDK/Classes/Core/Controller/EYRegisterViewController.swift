@@ -99,7 +99,7 @@ class EYRegisterViewController: EYLoginBaseViewController {
         var url = ""
         if EYLoginSDKManager.isTestMode {
             url = "\(testHost)/user_edition/register"
-            params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "id_card": idTextField?.text ?? "", "realname": nameTextField?.text ?? ""]
+            params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "id_card": idTextField?.text ?? "", "realname": nameTextField?.text ?? "", "deviceType": "ios", "deviceId": NSUUID().uuidString]
         } else {
             url = "\(host)/user/register"
             params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "deviceType": "ios", "deviceId": NSUUID().uuidString]
