@@ -55,6 +55,7 @@ open class EYLoginSDKManager: NSObject {
         EYLoginSDKManager.isTestMode = isTestMode
         if isTestMode {
             requestHost = "\(testHost)/user_edition"
+            self.unregistUserInfo()
         }
 //        addObserver()
         if EYLoginSDKManager.autoLogin {
@@ -85,15 +86,18 @@ open class EYLoginSDKManager: NSObject {
     open func login() {
         var state = loginState
         let uid = UserDefaults.standard.string(forKey: userIdentifier)
-        if uid?.count == 0 && state == EYLoginState.logined.rawValue {
+        if uid?.count == 0 && (state == EYLoginState.logined.rawValue || state == EYLoginState.anonymousLogined.rawValue) {
             UserDefaults.standard.setValue(EYLoginState.notLogin.rawValue, forKey: loginStateIdentifier)
             state = EYLoginState.notLogin.rawValue
+        }
+        if state == EYLoginState.anonymousLogined.rawValue {
+            EYLoginSDKManager.isAnonymous = true
         }
         delegate?.loginManagerDidGetLoginState(loginState: state)
         switch state {
         case EYLoginState.notLogin.rawValue:
             showLoginPage()
-        case EYLoginState.logined.rawValue:
+        case EYLoginState.logined.rawValue, EYLoginState.anonymousLogined.rawValue:
             self.uid = uid ?? ""
             startHeartbeat()
             delegate?.loginManagerDidLogin(loginState: loginState)
@@ -136,7 +140,11 @@ open class EYLoginSDKManager: NSObject {
     func loginSuccess() {
         showingVc?.dismiss(animated: true, completion: nil)
         showingVc = nil
-        UserDefaults.standard.setValue(1, forKey: loginStateIdentifier)
+        if EYLoginSDKManager.isAnonymous {
+            UserDefaults.standard.setValue(4, forKey: loginStateIdentifier)
+        } else {
+            UserDefaults.standard.setValue(1, forKey: loginStateIdentifier)
+        }
         UserDefaults.standard.synchronize()
         delegate?.loginManagerDidLogin(loginState: loginState)
         self.uid = UserDefaults.standard.string(forKey: userIdentifier) ?? ""

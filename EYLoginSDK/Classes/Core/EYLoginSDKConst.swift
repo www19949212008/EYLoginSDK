@@ -10,6 +10,7 @@ enum EYLoginState: Int {
     case logined = 1
     case registedNeedAuthentication = 2
     case registed = 3
+    case anonymousLogined = 4
 }
 
 let host = "http://192.168.184.97:8080"
