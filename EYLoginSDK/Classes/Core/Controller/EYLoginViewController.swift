@@ -11,7 +11,7 @@ class EYLoginViewController: EYLoginBaseViewController {
     private var accountTextField: UITextField!
     private var passwordTextField: UITextField!
     private var loginButton: UIButton!
-    private var anonymousLoginButton: UIButton!
+//    private var anonymousLoginButton: UIButton!
     private var toRegisterButton: UIButton!
     private let hud = ProgressHud()
     
@@ -38,19 +38,19 @@ class EYLoginViewController: EYLoginBaseViewController {
         view.addSubview(loginButton)
         loginButton.frame = CGRect(x: 15, y: passwordTextField.frame.maxY + 20, width: screenWidth-30, height: 50)
         
-        anonymousLoginButton = self.createOrangeButton(title: "游客登陆")
-        view.addSubview(anonymousLoginButton)
-        anonymousLoginButton.frame = CGRect(x: 15, y: loginButton.frame.maxY + 10, width: screenWidth-30, height: 50)
+//        anonymousLoginButton = self.createOrangeButton(title: "游客登陆")
+//        view.addSubview(anonymousLoginButton)
+//        anonymousLoginButton.frame = CGRect(x: 15, y: loginButton.frame.maxY + 10, width: screenWidth-30, height: 50)
         
         toRegisterButton = self.createOrangeButton(title: "没有账号，去注册")
         view.addSubview(toRegisterButton)
-        toRegisterButton.frame = CGRect(x: 15, y: anonymousLoginButton.frame.maxY + 10, width: screenWidth-30, height: 50)
+        toRegisterButton.frame = CGRect(x: 15, y: loginButton.frame.maxY + 10, width: screenWidth-30, height: 50)
         
         accountTextField.addTarget(self, action: #selector(self.textFieldDidChange(sender:)), for: .editingChanged)
         passwordTextField.addTarget(self, action: #selector(self.textFieldDidChange(sender:)), for: .editingChanged)
         toRegisterButton.addTarget(self, action: #selector(self.toRegisterButtonAction), for: .touchUpInside)
         loginButton.addTarget(self, action: #selector(self.loginButtonAction), for: .touchUpInside)
-        anonymousLoginButton.addTarget(self, action: #selector(self.anonymousLoginButtonAction), for: .touchUpInside)
+//        anonymousLoginButton.addTarget(self, action: #selector(self.anonymousLoginButtonAction), for: .touchUpInside)
     }
     
     @objc
