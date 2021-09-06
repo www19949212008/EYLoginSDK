@@ -196,6 +196,7 @@ open class EYLoginSDKManager: NSObject {
             
             EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
                 let code = data?["code"] as? Int
+                let message = data?["message"] as? String
                 switch code {
                 case 1002,1003,1006:
                     self.invalidBackgroundThread()
@@ -206,6 +207,9 @@ open class EYLoginSDKManager: NSObject {
                 case 1005:
                     self.invalidBackgroundThread()
                     self.showExitAlert()
+                case 1010:
+                    self.invalidBackgroundThread()
+                    self.showExitAlert(message: message)
                 default:
                     break
                 }
@@ -216,8 +220,8 @@ open class EYLoginSDKManager: NSObject {
         timer?.fire()
     }
     
-    func showExitAlert() {
-        let vc = UIAlertController(title: nil, message: "您今天该时段无法进行游戏，请稍后再试", preferredStyle: .alert)
+    func showExitAlert(message: String? = nil) {
+        let vc = UIAlertController(title: nil, message: message ?? "您今天该时段无法进行游戏，请稍后再试", preferredStyle: .alert)
         let action = UIAlertAction(title: "确定", style: .default) { (_) in
             abort()
         }
