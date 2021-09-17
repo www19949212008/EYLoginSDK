@@ -98,7 +98,7 @@ class EYRegisterViewController: EYLoginBaseViewController {
         var params: [String : Any]
         var url = ""
         if EYLoginSDKManager.isTestMode {
-            url = "\(testHost)/user_edition/register"
+            url = "\(testHost)/formalUser/register"
             params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "id_card": idTextField?.text ?? "", "realname": nameTextField?.text ?? "", "deviceType": "ios", "deviceId": NSUUID().uuidString]
         } else {
             url = "\(host)/user/register"
@@ -110,24 +110,60 @@ class EYRegisterViewController: EYLoginBaseViewController {
             if isSuccess {
                 let d = data?["data"] as? [String: Any]
                 let uid = d?["uid"] as? Int
-                let status = d?["status"] as? Int
-                let auth = d?["needauth"] as? Int
+//                let status = d?["status"] as? Int
+//                let auth = d?["needauth"] as? Int
+                let holidayArr = d?["holiday"] as? [String]
+                UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
                 UserDefaults.standard.setValue(uid, forKey: userIdentifier)
-                if auth == 1 {
-                    UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
-                    UserDefaults.standard.synchronize()
-                    EYLoginSDKManager.shared().changeToAuthentication()
-                } else if status == 1 {
+//                if auth == 1 {
+//                    UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
+//                    UserDefaults.standard.synchronize()
+//                    EYLoginSDKManager.shared().changeToAuthentication()
+//                } else if status == 1 {
+                    let isAdult = d?["adult"] as? Int == 0 ? false : true
+                    UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
+//                if !isAdult {
+//                    if let h = holidayArr {
+//                        if self.checkIsTime(holidayArr: h) {
+//                            EYLoginSDKManager.shared().loginSuccess()
+//                        } else {
+//                            UserDefaults.standard.setValue(EYLoginState.registed.rawValue, forKey: loginStateIdentifier)
+//                            UserDefaults.standard.synchronize()
+//                            EYLoginSDKManager.shared().changeToLogin()
+//                            EYLoginSDKManager.shared().showExitAlert(needExit: false)
+//                        }
+//                    } else {
+//                        UserDefaults.standard.setValue(EYLoginState.registed.rawValue, forKey: loginStateIdentifier)
+//                        UserDefaults.standard.synchronize()
+//                        EYLoginSDKManager.shared().changeToLogin()
+//                        EYLoginSDKManager.shared().showExitAlert(message: "注册成功请登陆",needExit: false)
+//                    }
+//                } else {
+//                    UserDefaults.standard.synchronize()
                     EYLoginSDKManager.shared().loginSuccess()
-                } else {
-                    UserDefaults.standard.setValue(EYLoginState.registed.rawValue, forKey: loginStateIdentifier)
-                    UserDefaults.standard.synchronize()
-                    EYLoginSDKManager.shared().changeToLogin()
-                }
+//                }
             } else {
                 ProgressHud.showTextHud(data?["message"] as? String ?? "注册失败，请稍后重试")
                 debugLog(message: "register error:", error.debugDescription)
             }
+        }
+    }
+    
+    func checkIsTime(holidayArr: [String]) -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let d = Date()
+        let date = formatter.string(from: d)
+        if holidayArr.contains(date) {
+            let calendar = Calendar.current
+            let hour = calendar.component(.hour, from: d)
+            if hour < 20 || hour > 21 {
+                return false
+            } else {
+                return true
+            }
+        } else {
+            return false
         }
     }
 }

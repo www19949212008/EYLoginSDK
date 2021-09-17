@@ -70,32 +70,68 @@ class EYLoginViewController: EYLoginBaseViewController {
         hud.showAnimatedHud()
         var url = ""
         if EYLoginSDKManager.isTestMode {
-            url = "\(testHost)/user_edition/login"
+            url = "\(testHost)/formalUser/login"
         } else {
             url = "\(host)/user/login"
         }
         EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
-            if isSuccess || data?["code"] as? Int == 1004  {
+            if isSuccess {
                 EYLoginSDKManager.isAnonymous = false
                 let d = data?["data"] as? [String: Any]
                 let uid = d?["uid"] as? Int
-                let status = d?["status"] as? Int
-                let auth = d?["authstatus"] as? Int
+                let holidayArr = d?["holiday"] as? [String]
+                UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
+//                let status = d?["status"] as? Int
+//                let auth = d?["authstatus"] as? Int
                 UserDefaults.standard.setValue(uid, forKey: userIdentifier)
-                if auth == 0 {
-                    UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
+//                if auth == 0 {
+//                    UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
+//                    UserDefaults.standard.synchronize()
+//                    EYLoginSDKManager.shared().changeToAuthentication()
+//                } else if status == 1 {
+                    let isAdult = d?["adult"] as? Int == 0 ? false : true
+                    UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
                     UserDefaults.standard.synchronize()
-                    EYLoginSDKManager.shared().changeToAuthentication()
-                } else if status == 1 {
+//                if !isAdult {
+//                    if let h = holidayArr {
+//                        if self.checkIsTime(holidayArr: h) {
+//                            EYLoginSDKManager.shared().loginSuccess()
+//                        } else {
+//                            EYLoginSDKManager.shared().showExitAlert(needExit: false)
+//                        }
+//                    } else {
+//                        EYLoginSDKManager.shared().showExitAlert(message: "数据获取失败请重试",needExit: false)
+//                    }
+//                } else {
                     EYLoginSDKManager.shared().loginSuccess()
-                } else {
-                    ProgressHud.showTextHud(data?["message"] as? String ?? "暂时无法登陆，请稍后重试")
-                }
+//                }
+                    
+//                } else {
+//                    ProgressHud.showTextHud(data?["message"] as? String ?? "暂时无法登陆，请稍后重试")
+//                }
             } else {
                 ProgressHud.showTextHud(data?["message"] as? String ?? "登陆失败，请稍后重试")
                 debugLog(message: "login error:", error.debugDescription)
             }
+        }
+    }
+    
+    func checkIsTime(holidayArr: [String]) -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let d = Date()
+        let date = formatter.string(from: d)
+        if holidayArr.contains(date) {
+            let calendar = Calendar.current
+            let hour = calendar.component(.hour, from: d)
+            if hour < 20 || hour > 21 {
+                return false
+            } else {
+                return true
+            }
+        } else {
+            return false
         }
     }
     
@@ -109,19 +145,21 @@ class EYLoginViewController: EYLoginBaseViewController {
                 EYLoginSDKManager.isAnonymous = true
                 let d = data?["data"] as? [String: Any]
                 let uid = d?["uid"] as? Int
-                let status = d?["status"] as? Int
+//                let status = d?["status"] as? Int
 //                let auth = d?["authstatus"] as? Int
+                let holidayArr = d?["holiday"] as? [String]
+                UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
                 UserDefaults.standard.setValue(uid, forKey: userIdentifier)
 //                if auth == 0 {
 //                    UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
 //                    UserDefaults.standard.synchronize()
 //                    EYLoginSDKManager.shared().changeToAuthentication()
 //                } else
-                if status == 1 {
+//                if status == 1 {
                     EYLoginSDKManager.shared().loginSuccess()
-                } else {
-                    ProgressHud.showTextHud(data?["message"] as? String ?? "暂时无法登陆，请稍后重试")
-                }
+//                } else {
+//                    ProgressHud.showTextHud(data?["message"] as? String ?? "暂时无法登陆，请稍后重试")
+//                }
             } else {
                 ProgressHud.showTextHud(data?["message"] as? String ?? "登陆失败，请稍后重试")
                 debugLog(message: "login error:", error.debugDescription)

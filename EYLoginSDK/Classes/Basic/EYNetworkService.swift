@@ -44,10 +44,10 @@ class EYNetworkService {
             } else {
                 let dataMap = try? JSONSerialization.jsonObject(with: data ?? Data(), options: .allowFragments) as? [String: Any]
                 let code = dataMap?["code"] as? Int
-                if code == 200 {
+                if code == 0 {
                     completeHandler(true, dataMap, nil)
                 } else {
-                    completeHandler(false, dataMap, NSError(domain: "requstErrorDomain", code: code ?? 0, userInfo: nil))
+                    completeHandler(false, dataMap, NSError(domain: "requstErrorDomain", code: code ?? -1, userInfo: nil))
                 }
             }
         }

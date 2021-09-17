@@ -13,9 +13,11 @@ enum EYLoginState: Int {
     case anonymousLogined = 4
 }
 
-let host = "http://192.168.184.97:8080"
+let host = "http://data-center-qy.eyugame.com:8980"
 let testHost = "http://data-center-qy.eyugame.com:8980"
-var requestHost = "\(host)/user"
+var requestHost = "\(host)/formalUser"
 
 let loginStateIdentifier = "EYLoginSDK_loginstate"
 let userIdentifier = "EYLoginSDK_userid"
+let isAdultIdentifier = "EYLoginSDK_isadult"
+let holidayIdentifier = "EYLoginSDK_holiday"

@@ -47,6 +47,10 @@ open class EYLoginSDKManager: NSObject {
     public static var isTestMode = false
     public static var isAnonymous = false
     
+    var isAdult: Bool = true
+    
+    private var holidayArr: [String]?
+    
     @objc
     open func initializeSDK(appkey: String, isTestMode: Bool = false) {
         self.appkey = appkey
@@ -54,7 +58,7 @@ open class EYLoginSDKManager: NSObject {
         isInit = true
         EYLoginSDKManager.isTestMode = isTestMode
         if isTestMode {
-            requestHost = "\(testHost)/user_edition"
+            requestHost = "\(testHost)/formalUser"
             self.unregistUserInfo()
         }
 //        addObserver()
@@ -148,6 +152,8 @@ open class EYLoginSDKManager: NSObject {
         UserDefaults.standard.synchronize()
         delegate?.loginManagerDidLogin(loginState: loginState)
         self.uid = UserDefaults.standard.string(forKey: userIdentifier) ?? ""
+        self.isAdult = UserDefaults.standard.bool(forKey: isAdultIdentifier)
+        
         startHeartbeat()
     }
     
@@ -188,30 +194,25 @@ open class EYLoginSDKManager: NSObject {
             let params: [String : Any]
             if EYLoginSDKManager.isTestMode {
                 params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey, "second": "10"] as [String : Any]
-                url = "\(testHost)/user_edition/heartbeat"
+                url = "\(testHost)/formalUser/heartbeat"
             } else {
                 params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
                 url = "\(host)/user/heartbeat"
             }
             
             EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
-                let code = data?["code"] as? Int
-                let message = data?["message"] as? String
-                switch code {
-                case 1002,1003,1006:
-                    self.invalidBackgroundThread()
-                    self.showLoginAlert()
-                case 1004,1007:
-                    self.invalidBackgroundThread()
-                    self.showAuthAlert()
-                case 1005:
-                    self.invalidBackgroundThread()
-                    self.showExitAlert()
-                case 1010:
-                    self.invalidBackgroundThread()
-                    self.showExitAlert(message: message)
-                default:
-                    break
+                if isSuccess {
+                    let code = data?["code"] as? Int
+                    let message = data?["message"] as? String
+                    switch code {
+                    case 1010:
+                        self.invalidBackgroundThread()
+                        self.showExitAlert(message: message)
+                    default:
+                        break
+                    }
+                } else {
+                    self.checkIsValidOnline()
                 }
             }
         }
@@ -220,10 +221,34 @@ open class EYLoginSDKManager: NSObject {
         timer?.fire()
     }
     
-    func showExitAlert(message: String? = nil) {
-        let vc = UIAlertController(title: nil, message: message ?? "您今天该时段无法进行游戏，请稍后再试", preferredStyle: .alert)
+    func checkIsValidOnline() {
+        if self.isAdult {
+            return
+        }
+        if holidayArr == nil {
+            holidayArr = UserDefaults.standard.object(forKey: holidayIdentifier) as? [String]
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let d = Date()
+        let date = formatter.string(from: d)
+        if holidayArr?.contains(date) ?? true {
+            let calendar = Calendar.current
+            let hour = calendar.component(.hour, from: d)
+            if hour < 20 || hour > 21 {
+                self.showExitAlert()
+            }
+        } else {
+            self.showExitAlert()
+        }
+    }
+    
+    func showExitAlert(message: String? = nil, needExit: Bool = true) {
+        let vc = UIAlertController(title: nil, message: message ?? "仅可在周五、周六、周日和法定节假日每日20时至21时向未成年人提供1小时网络游戏服务", preferredStyle: .alert)
         let action = UIAlertAction(title: "确定", style: .default) { (_) in
-            abort()
+            if needExit {
+                exit(0)
+            }
         }
         vc.addAction(action)
         rootViewController?.present(vc, animated: true, completion: nil)

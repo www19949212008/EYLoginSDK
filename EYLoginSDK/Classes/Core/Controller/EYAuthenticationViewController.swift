@@ -53,6 +53,12 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/auth", params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
             if isSuccess {
+                let d = data?["data"] as? [String: Any]
+                let isAdult = d?["adult"] as? Int == 0 ? false : true
+                let holidayArr = d?["holiday"] as? [String]
+                UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
+                UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
+                UserDefaults.standard.synchronize()
                 EYLoginSDKManager.shared().loginSuccess()
             } else {
                 if data?["code"] as? Int == 1005 {
