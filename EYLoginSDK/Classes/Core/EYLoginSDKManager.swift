@@ -342,12 +342,12 @@ open class EYLoginSDKManager: NSObject {
     @objc
     open func queryUserRechage() {
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/get_user_rechager", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/getMonthRecharge", params: params) { (isSuccess, data, error) in
             if isSuccess {
                 let mapData = data?["data"] as? [String: Any]
-                let  single_recharge = mapData?["single_recharge"] as? Int ?? -1
-                let month_recharge = mapData?["month_recharge"] as? Int ?? -1
-                let month_recharge_total = mapData?["month_recharge_total"] as? Int ?? -1
+                let  single_recharge = mapData?["singleRechargeLimit"] as? Int ?? -1
+                let month_recharge = mapData?["monthRechargeLimit"] as? Int ?? -1
+                let month_recharge_total = mapData?["monthRecharged"] as? Int ?? -1
                 let info = ["singleRecharge": single_recharge, "monthRecharge": month_recharge, "monthRechargeTotal": month_recharge_total] as [String: Any]
                 self.rechagerDelegate?.loginManagerDidGetUserRechageInfo(rechargeInfo: info)
             } else {
@@ -359,7 +359,7 @@ open class EYLoginSDKManager: NSObject {
     @objc
     open func uploadUserRechageInfo(rechargeMoney: Int) {
         let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey, "recharge_money": rechargeMoney] as [String : Any]
-        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/rechager", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/recharge", params: params) { (isSuccess, data, error) in
             if isSuccess {
                 self.rechagerDelegate?.loginManagerDidUploadUserRechageInfo()
             } else {
