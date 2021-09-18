@@ -62,6 +62,7 @@ open class EYLoginSDKManager: NSObject {
 //            self.unregistUserInfo()
 //        }
 //        addObserver()
+        
         if EYLoginSDKManager.autoLogin {
             login()
         }
@@ -229,18 +230,33 @@ open class EYLoginSDKManager: NSObject {
         if holidayArr == nil {
             holidayArr = UserDefaults.standard.object(forKey: holidayIdentifier) as? [String]
         }
+        if holidayArr?.count ?? 0 == 0 {
+            return
+        }
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         let d = Date()
-        let date = formatter.string(from: d)
-        if holidayArr?.contains(date) ?? true {
-            let calendar = Calendar.current
-            let hour = calendar.component(.hour, from: d)
-            if hour < 20 || hour > 21 {
+        let lastH = formatter.date(from: holidayArr!.last!) ?? Date()
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: d)
+        if d.timeIntervalSince1970 > lastH.timeIntervalSince1970 {
+            let weekDay = calendar.component(.weekday, from: d)
+            if weekDay == 1 || weekDay == 6 || weekDay == 7 {
+                if hour < 20 || hour > 21 {
+                    self.showExitAlert()
+                }
+            } else {
                 self.showExitAlert()
             }
         } else {
-            self.showExitAlert()
+            let date = formatter.string(from: d)
+            if holidayArr?.contains(date) ?? true {
+                if hour < 20 || hour > 21 {
+                    self.showExitAlert()
+                }
+            } else {
+                self.showExitAlert()
+            }
         }
     }
     
