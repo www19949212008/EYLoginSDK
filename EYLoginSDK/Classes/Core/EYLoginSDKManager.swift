@@ -49,7 +49,7 @@ open class EYLoginSDKManager: NSObject {
     
     var isAdult: Bool = true
     
-    private var holidayArr: [String]?
+    var holidayArr: [String]?
     
     @objc
     open func initializeSDK(appkey: String, isTestMode: Bool = false) {
@@ -57,10 +57,10 @@ open class EYLoginSDKManager: NSObject {
         UserDefaults.standard.register(defaults: [loginStateIdentifier: 0])
         isInit = true
         EYLoginSDKManager.isTestMode = isTestMode
-        if isTestMode {
-            requestHost = "\(testHost)/formalUser"
-            self.unregistUserInfo()
-        }
+//        if isTestMode {
+//            requestHost = "\(testHost)/formalUser"
+//            self.unregistUserInfo()
+//        }
 //        addObserver()
         if EYLoginSDKManager.autoLogin {
             login()
@@ -90,25 +90,25 @@ open class EYLoginSDKManager: NSObject {
     open func login() {
         var state = loginState
         let uid = UserDefaults.standard.string(forKey: userIdentifier)
-        if uid?.count == 0 && (state == EYLoginState.logined.rawValue || state == EYLoginState.anonymousLogined.rawValue) {
+        if uid?.count ?? 0 == 0 {
             UserDefaults.standard.setValue(EYLoginState.notLogin.rawValue, forKey: loginStateIdentifier)
             state = EYLoginState.notLogin.rawValue
         }
-        if state == EYLoginState.anonymousLogined.rawValue {
-            EYLoginSDKManager.isAnonymous = true
-        }
+//        if state == EYLoginState.anonymousLogined.rawValue {
+//            EYLoginSDKManager.isAnonymous = true
+//        }
         delegate?.loginManagerDidGetLoginState(loginState: state)
         switch state {
         case EYLoginState.notLogin.rawValue:
             showLoginPage()
-        case EYLoginState.logined.rawValue, EYLoginState.anonymousLogined.rawValue:
+        case EYLoginState.logined.rawValue:
             self.uid = uid ?? ""
             startHeartbeat()
             delegate?.loginManagerDidLogin(loginState: loginState)
-        case EYLoginState.registed.rawValue:
-            showLoginPage()
-        case EYLoginState.registedNeedAuthentication.rawValue:
-            showLoginPage()
+//        case EYLoginState.registed.rawValue:
+//            showLoginPage()
+//        case EYLoginState.registedNeedAuthentication.rawValue:
+//            showLoginPage()
         default:
             break
         }
@@ -119,11 +119,11 @@ open class EYLoginSDKManager: NSObject {
         if let vc =  rootViewController ?? UIApplication.shared.keyWindow?.rootViewController, vc.presentedViewController == nil {
             rootViewController = vc
             var loginVc: UIViewController
-            if loginState == EYLoginState.registedNeedAuthentication.rawValue {
+//            if loginState == EYLoginState.registedNeedAuthentication.rawValue {
                 loginVc = EYAuthenticationViewController()
-            } else {
-                loginVc = EYLoginViewController()
-            }
+//            } else {
+//                loginVc = EYLoginViewController()
+//            }
             loginVc.modalPresentationStyle = .fullScreen
             showingVc = loginVc
             vc.present(loginVc, animated: true) {
@@ -144,17 +144,16 @@ open class EYLoginSDKManager: NSObject {
     func loginSuccess() {
         showingVc?.dismiss(animated: true, completion: nil)
         showingVc = nil
-        if EYLoginSDKManager.isAnonymous {
-            UserDefaults.standard.setValue(4, forKey: loginStateIdentifier)
-        } else {
+//        if EYLoginSDKManager.isAnonymous {
+//            UserDefaults.standard.setValue(4, forKey: loginStateIdentifier)
+//        } else {
             UserDefaults.standard.setValue(1, forKey: loginStateIdentifier)
-        }
+//        }
         UserDefaults.standard.synchronize()
-        delegate?.loginManagerDidLogin(loginState: loginState)
         self.uid = UserDefaults.standard.string(forKey: userIdentifier) ?? ""
         self.isAdult = UserDefaults.standard.bool(forKey: isAdultIdentifier)
-        
         startHeartbeat()
+        delegate?.loginManagerDidLogin(loginState: loginState)
     }
     
     func changeToRigister() {
@@ -189,21 +188,23 @@ open class EYLoginSDKManager: NSObject {
             timer?.invalidate()
             timer = nil
         }
-        timer = Timer(timeInterval: 10, repeats: true) { (_) in
+        timer = Timer(timeInterval: 5, repeats: true) { (_) in
             var url = ""
             let params: [String : Any]
-            if EYLoginSDKManager.isTestMode {
-                params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey, "second": "10"] as [String : Any]
-                url = "\(testHost)/formalUser/heartbeat"
-            } else {
-                params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-                url = "\(host)/user/heartbeat"
-            }
+            params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+            url = "\(host)/heart"
             
             EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
                 if isSuccess {
                     let code = data?["code"] as? Int
                     let message = data?["message"] as? String
+                    let d = data?["data"] as? [String: Any]
+                    let holidayArr = d?["holiday"] as? [String]
+                    if let isAdult = d?["adult"] as? Int {
+                        self.isAdult = isAdult == 0 ? false : true
+                        UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
+                    }
+                    self.holidayArr = holidayArr
                     switch code {
                     case 1010:
                         self.invalidBackgroundThread()
@@ -217,8 +218,8 @@ open class EYLoginSDKManager: NSObject {
             }
         }
         RunLoop.current.add(timer!, forMode: .common)
-        RunLoop.current.run()
         timer?.fire()
+        RunLoop.current.run()
     }
     
     func checkIsValidOnline() {
@@ -244,7 +245,7 @@ open class EYLoginSDKManager: NSObject {
     }
     
     func showExitAlert(message: String? = nil, needExit: Bool = true) {
-        let vc = UIAlertController(title: nil, message: message ?? "仅可在周五、周六、周日和法定节假日每日20时至21时向未成年人提供1小时网络游戏服务", preferredStyle: .alert)
+        let vc = UIAlertController(title: nil, message: message ?? "根据国家防沉迷通知的相关要求，由于您是未成年人，仅能在周五、周六、周日及法定节假日20时至21时进入游戏", preferredStyle: .alert)
         let action = UIAlertAction(title: "确定", style: .default) { (_) in
             if needExit {
                 exit(0)
@@ -272,24 +273,24 @@ open class EYLoginSDKManager: NSObject {
         rootViewController?.present(vc, animated: true, completion: nil)
     }
     
-    @objc
-    open func logOut() {
-        if loginState != 1 {
-            return
-        }
-        let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
-        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/offline", params: params) { (isSuccess, data, error) in
-            if isSuccess {
-                EYLoginSDKManager.isAnonymous = false
-                self.unregistUserInfo()
-                self.invalidBackgroundThread()
-                self.delegate?.loginManagerDidLogout(loginState: self.loginState)
-            } else {
-                debugLog(message: error.debugDescription)
-                self.delegate?.loginManagerLogoutWithError(error: error ?? NSError())
-            }
-        }
-    }
+//    @objc
+//    open func logOut() {
+//        if loginState != 1 {
+//            return
+//        }
+//        let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+//        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/offline", params: params) { (isSuccess, data, error) in
+//            if isSuccess {
+//                EYLoginSDKManager.isAnonymous = false
+//                self.unregistUserInfo()
+//                self.invalidBackgroundThread()
+//                self.delegate?.loginManagerDidLogout(loginState: self.loginState)
+//            } else {
+//                debugLog(message: error.debugDescription)
+//                self.delegate?.loginManagerLogoutWithError(error: error ?? NSError())
+//            }
+//        }
+//    }
     
     func unregistUserInfo() {
         self.uid = ""
@@ -318,8 +319,8 @@ open class EYLoginSDKManager: NSObject {
     }
     
     @objc func exitThread() {
-//        CFRunLoopStop(RunLoop.current.getCFRunLoop())
-//        Thread.exit()
+        CFRunLoopStop(RunLoop.current.getCFRunLoop())
+        Thread.exit()
     }
     
     @objc

@@ -98,7 +98,7 @@ class EYRegisterViewController: EYLoginBaseViewController {
         var params: [String : Any]
         var url = ""
         if EYLoginSDKManager.isTestMode {
-            url = "\(testHost)/formalUser/register"
+            url = "\(testHost)/register"
             params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "id_card": idTextField?.text ?? "", "realname": nameTextField?.text ?? "", "deviceType": "ios", "deviceId": NSUUID().uuidString]
         } else {
             url = "\(host)/user/register"
@@ -109,7 +109,7 @@ class EYRegisterViewController: EYLoginBaseViewController {
             self.hud.stopAnimatedHud()
             if isSuccess {
                 let d = data?["data"] as? [String: Any]
-                let uid = d?["uid"] as? Int
+                let uid = d?["uid"] as? String
 //                let status = d?["status"] as? Int
 //                let auth = d?["needauth"] as? Int
                 let holidayArr = d?["holiday"] as? [String]

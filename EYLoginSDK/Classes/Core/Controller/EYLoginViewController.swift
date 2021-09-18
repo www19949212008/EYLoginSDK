@@ -70,16 +70,16 @@ class EYLoginViewController: EYLoginBaseViewController {
         hud.showAnimatedHud()
         var url = ""
         if EYLoginSDKManager.isTestMode {
-            url = "\(testHost)/formalUser/login"
+            url = "\(testHost)/login"
         } else {
-            url = "\(host)/user/login"
+            url = "\(host)/login"
         }
         EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
             if isSuccess {
                 EYLoginSDKManager.isAnonymous = false
                 let d = data?["data"] as? [String: Any]
-                let uid = d?["uid"] as? Int
+                let uid = d?["uid"] as? String
                 let holidayArr = d?["holiday"] as? [String]
                 UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
 //                let status = d?["status"] as? Int
@@ -144,7 +144,7 @@ class EYLoginViewController: EYLoginBaseViewController {
             if isSuccess || data?["code"] as? Int == 1004  {
                 EYLoginSDKManager.isAnonymous = true
                 let d = data?["data"] as? [String: Any]
-                let uid = d?["uid"] as? Int
+                let uid = d?["uid"] as? String
 //                let status = d?["status"] as? Int
 //                let auth = d?["authstatus"] as? Int
                 let holidayArr = d?["holiday"] as? [String]

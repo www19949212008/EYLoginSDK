@@ -8,14 +8,14 @@
 enum EYLoginState: Int {
     case notLogin = 0
     case logined = 1
-    case registedNeedAuthentication = 2
-    case registed = 3
-    case anonymousLogined = 4
+//    case registedNeedAuthentication = 2
+//    case registed = 3
+//    case anonymousLogined = 4
 }
 
 let host = "http://data-center-qy.eyugame.com:8980"
 let testHost = "http://data-center-qy.eyugame.com:8980"
-var requestHost = "\(host)/formalUser"
+var requestHost = "\(host)"
 
 let loginStateIdentifier = "EYLoginSDK_loginstate"
 let userIdentifier = "EYLoginSDK_userid"

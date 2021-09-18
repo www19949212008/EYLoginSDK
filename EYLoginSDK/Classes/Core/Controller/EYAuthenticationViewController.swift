@@ -14,6 +14,10 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
     private var commitButton: UIButton!
     private let hud = ProgressHud()
     
+    override var titleString: String {
+        return "实名认证"
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -48,7 +52,7 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
     }
     
     @objc func commitAction() {
-        let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey, "idCard": idTextField.text ?? "", "name": nameTextField.text ?? ""] as [String : Any]
+        let params = ["appkey": EYLoginSDKManager.shared().appkey, "idcard": idTextField.text ?? "", "realname": nameTextField.text ?? "", "deviceid": NSUUID().uuidString] as [String : Any]
         hud.showAnimatedHud()
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/auth", params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
@@ -56,17 +60,19 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
                 let d = data?["data"] as? [String: Any]
                 let isAdult = d?["adult"] as? Int == 0 ? false : true
                 let holidayArr = d?["holiday"] as? [String]
+                let uid = d?["uid"] as? String
+                EYLoginSDKManager.shared().holidayArr = holidayArr
+                UserDefaults.standard.setValue(uid, forKey: userIdentifier)
                 UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
                 UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
                 UserDefaults.standard.synchronize()
                 EYLoginSDKManager.shared().loginSuccess()
             } else {
-                if data?["code"] as? Int == 1005 {
-                    ProgressHud.showTextHud(data?["message"] as? String ?? "实名认证成功，该时间段暂时无法登陆")
-                    UserDefaults.standard.setValue(EYLoginState.registed.rawValue, forKey: loginStateIdentifier)
-                    UserDefaults.standard.synchronize()
-                    EYLoginSDKManager.shared().changeToLogin()
+                if data?["code"] as? Int == 1010 {
+                    EYLoginSDKManager.shared().showExitAlert(message: data?["message"] as? String ?? "实名认证成功，该时间段暂时无法登陆")
+                    EYLoginSDKManager.shared().delegate?.loginManagerLoginWithError(error: NSError(domain: "AuthErrorDomain", code: 1010, userInfo: nil))
                 } else {
+                    EYLoginSDKManager.shared().delegate?.loginManagerLoginWithError(error: error ?? NSError(domain: "LoginErrorDomain", code: data?["code"] as? Int ?? -1, userInfo: nil))
                     ProgressHud.showTextHud(data?["message"] as? String ?? "身份信息验证失败，请稍后重试")
                 }
                 debugLog(message: error.debugDescription)

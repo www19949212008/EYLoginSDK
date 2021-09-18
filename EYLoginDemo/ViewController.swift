@@ -39,7 +39,7 @@ class ViewController: UIViewController, EYRechagerDelegate, EYLoginDelegate {
     }
     
     @objc func logout() {
-        EYLoginSDKManager.shared().logOut()
+//        EYLoginSDKManager.shared().logOut()
     }
     
     @objc func chaxun() {
