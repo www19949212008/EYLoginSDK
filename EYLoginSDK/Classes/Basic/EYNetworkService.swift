@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CommonCrypto
 
 enum EYNetworkRequstMethod {
     case post
@@ -20,10 +21,12 @@ class EYNetworkService {
             completeHandler(false, nil, NSError(domain: "NetworkUrlErrorDoamin", code: -1000, userInfo: nil))
             return
         }
+        var p = params
+        p?["s"] = instance.getSecretkey(params: params ?? [:])
         let request = NSMutableURLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 15)
         if method == .get {
             var i = 0
-            for (key, value) in (params ?? [:]) {
+            for (key, value) in (p ?? [:]) {
                 let v = instance.escape("\(value)")
                 if i == 0 {
                     urlS += "?\(key)=\(v)"
@@ -36,7 +39,7 @@ class EYNetworkService {
             request.httpMethod = "GET"
         } else {
             request.httpMethod = "POST"
-            request.httpBody = try? JSONSerialization.data(withJSONObject: params ?? [:], options: .fragmentsAllowed)
+            request.httpBody = try? JSONSerialization.data(withJSONObject: p ?? [:], options: .fragmentsAllowed)
         }
         EYUrlRequestHandler.instance.sendRequest(request: request) { (data, error) in
             if error != nil {
@@ -97,5 +100,30 @@ class EYNetworkService {
         allowedCharacterSet.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
         
         return string.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet) ?? string
+    }
+    
+    func getSecretkey(params: [String: Any]) -> String {
+        var secretkey = ""
+        for key in params.keys.sorted(by: {$0 < $1}) {
+            let value = params[key] ?? ""
+            secretkey = "\(secretkey)\(key)=\(value)&"
+        }
+        secretkey = secretkey + EYLoginSDKManager.shared().secretkey
+        secretkey = md5(string: secretkey)
+        return secretkey
+    }
+    
+    func md5(string: String) -> String {
+        let str = string.cString(using: String.Encoding.utf8)
+        let strLen = CUnsignedInt(string.lengthOfBytes(using: String.Encoding.utf8))
+        let digestLen = Int(CC_MD5_DIGEST_LENGTH)
+        let result = UnsafeMutablePointer<CUnsignedChar>.allocate(capacity: digestLen)
+        CC_MD5(str!, strLen, result)
+        let hash = NSMutableString()
+        for i in 0..<digestLen {
+            hash.appendFormat("%02x", result[i])
+        }
+        result.deallocate()
+        return hash as String
     }
 }

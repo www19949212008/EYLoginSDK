@@ -38,6 +38,7 @@ open class EYLoginSDKManager: NSObject {
     }
     
     open private(set) var appkey = ""
+    open private(set) var secretkey = ""
     
     open private(set) var uid = ""
     
@@ -52,11 +53,12 @@ open class EYLoginSDKManager: NSObject {
     var holidayArr: [String]?
     
     @objc
-    open func initializeSDK(appkey: String, isTestMode: Bool = false) {
+    open func initializeSDK(appkey: String, secretkey: String) {
         self.appkey = appkey
+        self.secretkey = secretkey
         UserDefaults.standard.register(defaults: [loginStateIdentifier: 0])
         isInit = true
-        EYLoginSDKManager.isTestMode = isTestMode
+//        EYLoginSDKManager.isTestMode = isTestMode
 //        if isTestMode {
 //            requestHost = "\(testHost)/formalUser"
 //            self.unregistUserInfo()
@@ -189,10 +191,10 @@ open class EYLoginSDKManager: NSObject {
             timer?.invalidate()
             timer = nil
         }
-        timer = Timer(timeInterval: 5, repeats: true) { (_) in
+        timer = Timer(timeInterval: 60, repeats: true) { (_) in
             var url = ""
             let params: [String : Any]
-            params = ["uid": self.uid, "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+            params = ["appkey": EYLoginSDKManager.shared().appkey, "uid": self.uid, "v": "1.0"] as [String : Any]
             url = "\(host)/heart"
             
             EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in

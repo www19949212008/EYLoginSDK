@@ -52,7 +52,7 @@ class EYAuthenticationViewController: EYLoginBaseViewController {
     }
     
     @objc func commitAction() {
-        let params = ["appkey": EYLoginSDKManager.shared().appkey, "idcard": idTextField.text ?? "", "realname": nameTextField.text ?? "", "deviceid": NSUUID().uuidString] as [String : Any]
+        let params = ["appkey": EYLoginSDKManager.shared().appkey, "idcard": idTextField.text ?? "", "realname": nameTextField.text ?? "", "deviceid": NSUUID().uuidString, "v":"1.0"] as [String : Any]
         hud.showAnimatedHud()
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/auth", params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
