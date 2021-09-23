@@ -8,7 +8,7 @@
 @objc
 public protocol EYLoginDelegate: AnyObject {
     func loginManagerDidGetLoginState(loginState: Int)
-    func loginManagerWillShowLoginPage()
+//    func loginManagerWillShowLoginPage()
     func loginManagerDidShowLoginPage()
     func loginManagerDidLogin(loginState: Int)
     func loginManagerLoginWithError(error: Error)

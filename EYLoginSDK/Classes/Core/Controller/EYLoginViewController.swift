@@ -169,6 +169,6 @@ class EYLoginViewController: EYLoginBaseViewController {
     
     @objc
     func toRegisterButtonAction() {
-        EYLoginSDKManager.shared().changeToRigister()
+//        EYLoginSDKManager.shared().changeToRigister()
     }
 }

@@ -36,6 +36,11 @@ class ViewController: UIViewController, EYRechagerDelegate, EYLoginDelegate {
         view.addSubview(uploadBtn)
         uploadBtn.frame = CGRect(x: 20, y: 220, width: 50, height: 70)
         uploadBtn.addTarget(self, action: #selector(self.upload), for: .touchUpInside)
+        
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        EYLoginSDKManager.shared().showExitAlert(needExit: false)
     }
     
     @objc func logout() {

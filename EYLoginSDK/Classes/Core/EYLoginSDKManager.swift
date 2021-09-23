@@ -52,6 +52,8 @@ open class EYLoginSDKManager: NSObject {
     
     var holidayArr: [String]?
     
+    private lazy var authView = EYAuthenticationView()
+    
     @objc
     open func initializeSDK(appkey: String, secretkey: String) {
         self.appkey = appkey
@@ -118,35 +120,37 @@ open class EYLoginSDKManager: NSObject {
     }
     
     func showLoginPage() {
-        delegate?.loginManagerWillShowLoginPage()
-        if let vc =  rootViewController ?? UIApplication.shared.keyWindow?.rootViewController, vc.presentedViewController == nil {
-            rootViewController = vc
-            var loginVc: UIViewController
+//        delegate?.loginManagerWillShowLoginPage()
+        if UIApplication.shared.keyWindow != nil {
+//            rootViewController = vc
+//            var loginVc: UIViewController
 //            if loginState == EYLoginState.registedNeedAuthentication.rawValue {
-                loginVc = EYAuthenticationViewController()
+//                loginVc = EYAuthenticationViewController()
 //            } else {
 //                loginVc = EYLoginViewController()
 //            }
-            loginVc.modalPresentationStyle = .fullScreen
-            showingVc = loginVc
-            vc.present(loginVc, animated: true) {
-                self.delegate?.loginManagerDidShowLoginPage()
-            }
+//            loginVc.modalPresentationStyle = .fullScreen
+//            showingVc = loginVc
+//            vc.present(loginVc, animated: true) {
+            authView.show()
+            self.delegate?.loginManagerDidShowLoginPage()
+//            }
         } else {
             if tryPresentLoginVcCount < 5 {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                     self.tryPresentLoginVcCount += 1
                     self.showLoginPage()
                 }
             } else {
-                debugLog(message: "no root vc")
+                debugLog(message: "no key window")
             }
         }
     }
     
-    func loginSuccess() {
-        showingVc?.dismiss(animated: true, completion: nil)
-        showingVc = nil
+    func loginSuccess(message: String? = nil) {
+        authView.dismiss()
+//        showingVc?.dismiss(animated: true, completion: nil)
+//        showingVc = nil
 //        if EYLoginSDKManager.isAnonymous {
 //            UserDefaults.standard.setValue(4, forKey: loginStateIdentifier)
 //        } else {
@@ -155,30 +159,41 @@ open class EYLoginSDKManager: NSObject {
         UserDefaults.standard.synchronize()
         self.uid = UserDefaults.standard.string(forKey: userIdentifier) ?? ""
         self.isAdult = UserDefaults.standard.bool(forKey: isAdultIdentifier)
-        startHeartbeat()
         delegate?.loginManagerDidLogin(loginState: loginState)
+        if message != nil {
+            showExitAlert(message: message, needExit: true)
+        } else {
+            startHeartbeat()
+        }
     }
     
-    func changeToRigister() {
-        showingVc?.dismiss(animated: false, completion: nil)
-        showingVc = EYRegisterViewController()
-        showingVc?.modalPresentationStyle = .fullScreen
-        rootViewController?.present(showingVc!, animated: false, completion: nil)
-    }
+//    func changeToRigister() {
+//        showingVc?.dismiss(animated: false, completion: nil)
+//        showingVc = EYRegisterViewController()
+//        showingVc?.modalPresentationStyle = .fullScreen
+//        rootViewController?.present(showingVc!, animated: false, completion: nil)
+//    }
     
     func changeToLogin() {
-        showingVc?.dismiss(animated: false, completion: nil)
-        showingVc = EYLoginViewController()
-        showingVc?.modalPresentationStyle = .fullScreen
-        rootViewController?.present(showingVc!, animated: false, completion: nil)
+//        showingVc?.dismiss(animated: false, completion: nil)
+        authView.show()
+//        showingVc = EYLoginViewController()
+//        showingVc?.modalPresentationStyle = .fullScreen
+//        rootViewController?.present(showingVc!, animated: false, completion: nil)
     }
     
-    func changeToAuthentication() {
-        showingVc?.dismiss(animated: false, completion: nil)
-        showingVc = EYAuthenticationViewController()
-        showingVc?.modalPresentationStyle = .fullScreen
-        rootViewController?.present(showingVc!, animated: false, completion: nil)
+    func changeToNoti() {
+        showingVc = UINavigationController(rootViewController: EYNotificationController())
+//        showingVc?.modalPresentationStyle = .fullScreen
+        self.rootViewController?.present(showingVc!, animated: true, completion: nil)
     }
+    
+//    func changeToAuthentication() {
+//        showingVc?.dismiss(animated: false, completion: nil)
+//        showingVc = EYAuthenticationViewController()
+//        showingVc?.modalPresentationStyle = .fullScreen
+//        rootViewController?.present(showingVc!, animated: false, completion: nil)
+//    }
     
     func startHeartbeat() {
         thread = Thread(target: self, selector: #selector(self.heartBeatThreadAction), object: nil)
@@ -216,7 +231,9 @@ open class EYLoginSDKManager: NSObject {
                         break
                     }
                 } else {
-                    self.checkIsValidOnline()
+                    if !self.checkIsValidOnline() {
+                        self.showExitAlert()
+                    }
                 }
             }
         }
@@ -225,15 +242,15 @@ open class EYLoginSDKManager: NSObject {
         RunLoop.current.run()
     }
     
-    func checkIsValidOnline() {
+    public func checkIsValidOnline() -> Bool {
         if self.isAdult {
-            return
+            return true
         }
         if holidayArr == nil {
             holidayArr = UserDefaults.standard.object(forKey: holidayIdentifier) as? [String]
         }
         if holidayArr?.count ?? 0 == 0 {
-            return
+            return true
         }
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -245,24 +262,28 @@ open class EYLoginSDKManager: NSObject {
             let weekDay = calendar.component(.weekday, from: d)
             if weekDay == 1 || weekDay == 6 || weekDay == 7 {
                 if hour < 20 || hour > 21 {
-                    self.showExitAlert()
+                    return false
+                } else {
+                    return true
                 }
             } else {
-                self.showExitAlert()
+                return false
             }
         } else {
             let date = formatter.string(from: d)
             if holidayArr?.contains(date) ?? true {
                 if hour < 20 || hour > 21 {
-                    self.showExitAlert()
+                    return false
+                } else {
+                    return true
                 }
             } else {
-                self.showExitAlert()
+                return false
             }
         }
     }
     
-    func showExitAlert(message: String? = nil, needExit: Bool = true) {
+    public func showExitAlert(message: String? = nil, needExit: Bool = true) {
         let vc = UIAlertController(title: nil, message: message ?? "根据国家防沉迷通知的相关要求，由于您是未成年人，仅能在周五、周六、周日及法定节假日20时至21时进入游戏", preferredStyle: .alert)
         let action = UIAlertAction(title: "确定", style: .default) { (_) in
             if needExit {
@@ -273,23 +294,23 @@ open class EYLoginSDKManager: NSObject {
         rootViewController?.present(vc, animated: true, completion: nil)
     }
     
-    func showAuthAlert() {
-        let vc = UIAlertController(title: nil, message: "您还未进行实名认证，请先进行实名认证", preferredStyle: .alert)
-        let action = UIAlertAction(title: "确定", style: .default) { (_) in
-            self.changeToAuthentication()
-        }
-        vc.addAction(action)
-        rootViewController?.present(vc, animated: true, completion: nil)
-    }
-    
-    func showLoginAlert() {
-        let vc = UIAlertController(title: nil, message: "登陆信息验证失败，请重新登录", preferredStyle: .alert)
-        let action = UIAlertAction(title: "确定", style: .default) { (_) in
-            self.changeToLogin()
-        }
-        vc.addAction(action)
-        rootViewController?.present(vc, animated: true, completion: nil)
-    }
+//    func showAuthAlert() {
+//        let vc = UIAlertController(title: nil, message: "您还未进行实名认证，请先进行实名认证", preferredStyle: .alert)
+//        let action = UIAlertAction(title: "确定", style: .default) { (_) in
+//            self.changeToAuthentication()
+//        }
+//        vc.addAction(action)
+//        rootViewController?.present(vc, animated: true, completion: nil)
+//    }
+//
+//    func showLoginAlert() {
+//        let vc = UIAlertController(title: nil, message: "登陆信息验证失败，请重新登录", preferredStyle: .alert)
+//        let action = UIAlertAction(title: "确定", style: .default) { (_) in
+//            self.changeToLogin()
+//        }
+//        vc.addAction(action)
+//        rootViewController?.present(vc, animated: true, completion: nil)
+//    }
     
 //    @objc
 //    open func logOut() {
