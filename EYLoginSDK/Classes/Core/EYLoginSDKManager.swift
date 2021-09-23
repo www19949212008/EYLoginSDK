@@ -193,7 +193,7 @@ open class EYLoginSDKManager: NSObject {
     
     func changeToNoti() {
         showingVc = UINavigationController(rootViewController: EYNotificationController())
-        showingVc?.modalPresentationStyle = .fullScreen
+//        showingVc?.modalPresentationStyle = .fullScreen
         self.rootViewController?.present(showingVc!, animated: true, completion: nil)
     }
     
