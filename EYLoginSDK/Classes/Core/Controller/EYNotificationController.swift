@@ -16,7 +16,8 @@ class EYNotificationController: UIViewController {
 
         title = "防沉迷通知"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "关闭", style: .plain, target: self, action: #selector(self.close))
-        self.edgesForExtendedLayout = []
+//        self.edgesForExtendedLayout = []
+        self.navigationController?.navigationBar.isTranslucent = false
         // Do any additional setup after loading the view.
         setupUI()
     }
@@ -55,6 +56,9 @@ class EYNotificationController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
+        if contentLabel.frame == CGRect.zero {
+            scrollView.layoutIfNeeded()
+        }
         scrollView.frame = view.bounds
         scrollView.contentSize = CGSize(width: 0, height: contentLabel.frame.maxY + 15)
     }

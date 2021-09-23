@@ -25,12 +25,19 @@ open class EYLoginSDKManager: NSObject {
         return UserDefaults.standard.integer(forKey: loginStateIdentifier)
     }
     
-    var tryPresentLoginVcCount = 0
+//    var tryPresentLoginVcCount = 0
+    open var needShowAuthView = false
     
     private var showingVc: UIViewController?
     
     @objc
-    open var rootViewController: UIViewController?
+    open var rootViewController: UIViewController? {
+        didSet {
+            if needShowAuthView {
+                self.showLoginPage()
+            }
+        }
+    }
     
     @objc
     open class func shared() -> EYLoginSDKManager {
@@ -119,9 +126,9 @@ open class EYLoginSDKManager: NSObject {
         }
     }
     
-    func showLoginPage() {
+    open func showLoginPage() {
 //        delegate?.loginManagerWillShowLoginPage()
-        if UIApplication.shared.keyWindow != nil {
+        if UIApplication.shared.keyWindow != nil || UIApplication.shared.windows.count != 0 {
 //            rootViewController = vc
 //            var loginVc: UIViewController
 //            if loginState == EYLoginState.registedNeedAuthentication.rawValue {
@@ -132,18 +139,20 @@ open class EYLoginSDKManager: NSObject {
 //            loginVc.modalPresentationStyle = .fullScreen
 //            showingVc = loginVc
 //            vc.present(loginVc, animated: true) {
+            needShowAuthView = false
             authView.show()
             self.delegate?.loginManagerDidShowLoginPage()
 //            }
         } else {
-            if tryPresentLoginVcCount < 5 {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-                    self.tryPresentLoginVcCount += 1
-                    self.showLoginPage()
-                }
-            } else {
-                debugLog(message: "no key window")
-            }
+            needShowAuthView = true
+//            if tryPresentLoginVcCount < 5 {
+//                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+//                    self.tryPresentLoginVcCount += 1
+//                    self.showLoginPage()
+//                }
+//            } else {
+//                debugLog(message: "no key window")
+//            }
         }
     }
     
@@ -184,7 +193,7 @@ open class EYLoginSDKManager: NSObject {
     
     func changeToNoti() {
         showingVc = UINavigationController(rootViewController: EYNotificationController())
-//        showingVc?.modalPresentationStyle = .fullScreen
+        showingVc?.modalPresentationStyle = .fullScreen
         self.rootViewController?.present(showingVc!, animated: true, completion: nil)
     }
     
@@ -242,7 +251,7 @@ open class EYLoginSDKManager: NSObject {
         RunLoop.current.run()
     }
     
-    public func checkIsValidOnline() -> Bool {
+    open func checkIsValidOnline() -> Bool {
         if self.isAdult {
             return true
         }
@@ -283,7 +292,7 @@ open class EYLoginSDKManager: NSObject {
         }
     }
     
-    public func showExitAlert(message: String? = nil, needExit: Bool = true) {
+    func showExitAlert(message: String? = nil, needExit: Bool = true) {
         let vc = UIAlertController(title: nil, message: message ?? "根据国家防沉迷通知的相关要求，由于您是未成年人，仅能在周五、周六、周日及法定节假日20时至21时进入游戏", preferredStyle: .alert)
         let action = UIAlertAction(title: "确定", style: .default) { (_) in
             if needExit {

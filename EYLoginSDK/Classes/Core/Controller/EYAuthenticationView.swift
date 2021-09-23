@@ -62,10 +62,20 @@ class FullScreenBaseView: UIView, UIGestureRecognizerDelegate {
         if self.superview != nil {
             return
         }
-        UIApplication.shared.keyWindow?.addSubview(self)
+        var window = UIApplication.shared.keyWindow
+        if window == nil {
+            window = UIApplication.shared.windows.last
+        }
+        window?.addSubview(self)
         self.alpha = 0
         UIView.animate(withDuration: 0.2) {
             self.alpha = 1
+        }
+    }
+    
+    override func layoutSubviews() {
+        if self.superview != nil {
+            UIApplication.shared.keyWindow?.bringSubviewToFront(self)
         }
     }
 }

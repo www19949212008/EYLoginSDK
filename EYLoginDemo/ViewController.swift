@@ -39,8 +39,8 @@ class ViewController: UIViewController, EYRechagerDelegate, EYLoginDelegate {
         
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        EYLoginSDKManager.shared().showExitAlert(needExit: false)
+    override func viewDidAppear(_ animated: Bool) {
+        
     }
     
     @objc func logout() {
@@ -69,10 +69,6 @@ class ViewController: UIViewController, EYRechagerDelegate, EYLoginDelegate {
     
     func loginManagerUploadUserRechageInfoWithError(error: Error?, message: String?) {
         print("上传失败：", error.debugDescription, message)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        
     }
     
     func loginManagerDidGetLoginState(loginState: Int) {
