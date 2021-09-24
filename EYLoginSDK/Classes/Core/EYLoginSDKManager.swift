@@ -31,6 +31,7 @@ open class EYLoginSDKManager: NSObject {
     open var needShowAuthView = false
     
     private var showingVc: UIViewController?
+    private var showingView: FullScreenBaseView?
     
     @objc
     open var rootViewController: UIViewController? {
@@ -142,20 +143,17 @@ open class EYLoginSDKManager: NSObject {
 //            loginVc.modalPresentationStyle = .fullScreen
 //            showingVc = loginVc
 //            vc.present(loginVc, animated: true) {
-            needShowAuthView = false
-            authView.show()
-            self.delegate?.loginManagerDidShowLoginPage()
 //            }
+            if isNeedAccount {
+                showingView = EYLoginView()
+                showingView?.show()
+            } else {
+                needShowAuthView = false
+                authView.show()
+                self.delegate?.loginManagerDidShowLoginPage()
+            }
         } else {
             needShowAuthView = true
-//            if tryPresentLoginVcCount < 5 {
-//                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-//                    self.tryPresentLoginVcCount += 1
-//                    self.showLoginPage()
-//                }
-//            } else {
-//                debugLog(message: "no key window")
-//            }
         }
     }
     
@@ -179,19 +177,16 @@ open class EYLoginSDKManager: NSObject {
         }
     }
     
-//    func changeToRigister() {
-//        showingVc?.dismiss(animated: false, completion: nil)
-//        showingVc = EYRegisterViewController()
-//        showingVc?.modalPresentationStyle = .fullScreen
-//        rootViewController?.present(showingVc!, animated: false, completion: nil)
-//    }
+    func changeToRigister() {
+        showingView?.dismiss()
+        showingView = EYRegisterView()
+        showingView?.show()
+    }
     
     func changeToLogin() {
-//        showingVc?.dismiss(animated: false, completion: nil)
-        authView.show()
-//        showingVc = EYLoginViewController()
-//        showingVc?.modalPresentationStyle = .fullScreen
-//        rootViewController?.present(showingVc!, animated: false, completion: nil)
+        showingView?.dismiss()
+        showingView = EYLoginView()
+        showingView?.show()
     }
     
     func changeToNoti() {

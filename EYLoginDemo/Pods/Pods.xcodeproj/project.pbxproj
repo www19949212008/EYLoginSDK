@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		072AFBD826FDD9BF00529BCA /* EYLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 072AFBD726FDD9BF00529BCA /* EYLoginView.swift */; };
+		072AFBDA26FDDF4700529BCA /* EYRegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 072AFBD926FDDF4700529BCA /* EYRegisterView.swift */; };
 		0762E5B92611D481005A8AA8 /* ProgressHud.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0762E5B82611D481005A8AA8 /* ProgressHud.swift */; };
 		0762E5BD2611D49D005A8AA8 /* EYLoginSDKConst.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0762E5BC2611D49D005A8AA8 /* EYLoginSDKConst.swift */; };
 		079D596E260ADDF600FFCE3B /* EYNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079D596D260ADDF600FFCE3B /* EYNetworkService.swift */; };
@@ -41,6 +43,8 @@
 /* Begin PBXFileReference section */
 		007D2A96BD1B724643C57BED91D5780E /* EYLoginSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EYLoginSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		043EDFFC1D1D9BAA7AE7D7BBDBAAE2B3 /* Pods-EYLoginDemo-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-EYLoginDemo-acknowledgements.plist"; sourceTree = "<group>"; };
+		072AFBD726FDD9BF00529BCA /* EYLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EYLoginView.swift; sourceTree = "<group>"; };
+		072AFBD926FDDF4700529BCA /* EYRegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EYRegisterView.swift; sourceTree = "<group>"; };
 		0762E5B82611D481005A8AA8 /* ProgressHud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProgressHud.swift; path = EYLoginSDK/Classes/Core/ProgressHud.swift; sourceTree = "<group>"; };
 		0762E5BC2611D49D005A8AA8 /* EYLoginSDKConst.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EYLoginSDKConst.swift; path = EYLoginSDK/Classes/Core/EYLoginSDKConst.swift; sourceTree = "<group>"; };
 		079D596D260ADDF600FFCE3B /* EYNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EYNetworkService.swift; sourceTree = "<group>"; };
@@ -134,6 +138,8 @@
 				2EB1FA8D79D7D163F5674900D487B7CF /* EYLoginViewController.swift */,
 				233C18C42F2D539A10221B8AF7DFDC31 /* EYRegisterViewController.swift */,
 				07A267AD26FB3B4400BC5513 /* EYAuthenticationView.swift */,
+				072AFBD726FDD9BF00529BCA /* EYLoginView.swift */,
+				072AFBD926FDDF4700529BCA /* EYRegisterView.swift */,
 				07A267AF26FC57A300BC5513 /* EYNotificationController.swift */,
 			);
 			name = Controller;
@@ -365,6 +371,8 @@
 				0762E5BD2611D49D005A8AA8 /* EYLoginSDKConst.swift in Sources */,
 				079D5976260B24D200FFCE3B /* Common.swift in Sources */,
 				07A267AE26FB3B4400BC5513 /* EYAuthenticationView.swift in Sources */,
+				072AFBD826FDD9BF00529BCA /* EYLoginView.swift in Sources */,
+				072AFBDA26FDDF4700529BCA /* EYRegisterView.swift in Sources */,
 				7638E23FDF27023FDB31B4D89EC2F65A /* EYRegisterViewController.swift in Sources */,
 				0762E5B92611D481005A8AA8 /* ProgressHud.swift in Sources */,
 			);

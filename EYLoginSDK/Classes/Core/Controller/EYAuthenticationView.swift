@@ -27,7 +27,9 @@ class FullScreenBaseView: UIView, UIGestureRecognizerDelegate {
     func setupUI() {
         backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         addSubview(whiteView)
-        whiteView.backgroundColor = UIColor.white
+        whiteView.translatesAutoresizingMaskIntoConstraints = false
+        whiteView.backgroundColor = UIColor(red: 0/255.0, green: 140/255.0, blue: 236/255.0, alpha: 1)
+//        whiteView.backgroundColor = UIColor.white
         whiteView.layer.cornerRadius = 12
         
         if enableTap {
@@ -87,9 +89,6 @@ class EYAuthenticationView: FullScreenBaseView {
     private let hud = ProgressHud()
 
     override func setupWhiteView() {
-        whiteView.translatesAutoresizingMaskIntoConstraints = false
-        whiteView.backgroundColor = UIColor(red: 0/255.0, green: 140/255.0, blue: 236/255.0, alpha: 1)
-        
         let titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.textColor = UIColor.white
@@ -151,7 +150,7 @@ class EYAuthenticationView: FullScreenBaseView {
         commitButton.isEnabled = false
         commitButton.setTitle("提交认证", for: .normal)
         commitButton.layer.cornerRadius = 5
-        commitButton.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.bold)
+        commitButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: UIFont.Weight.bold)
         let cc1 = NSLayoutConstraint(item: commitButton, attribute: .top, relatedBy: .equal, toItem: cornerView, attribute: .bottom, multiplier: 1, constant: 15)
         let cc2 = NSLayoutConstraint(item: commitButton, attribute: .left, relatedBy: .equal, toItem: whiteView, attribute: .left, multiplier: 1, constant: 15)
         let cc3 = NSLayoutConstraint(item: commitButton, attribute: .right, relatedBy: .equal, toItem: whiteView, attribute: .right, multiplier: 1, constant: -15)
