@@ -21,6 +21,8 @@ open class EYLoginSDKManager: NSObject {
     public static var autoLogin = true
     
     var isInit = false
+    private var isNeedAccount = false
+    
     @objc open var loginState: Int {
         return UserDefaults.standard.integer(forKey: loginStateIdentifier)
     }
@@ -62,9 +64,10 @@ open class EYLoginSDKManager: NSObject {
     private lazy var authView = EYAuthenticationView()
     
     @objc
-    open func initializeSDK(appkey: String, secretkey: String) {
+    open func initializeSDK(appkey: String, secretkey: String, isNeedAccount: Bool = false) {
         self.appkey = appkey
         self.secretkey = secretkey
+        self.isNeedAccount = isNeedAccount
         UserDefaults.standard.register(defaults: [loginStateIdentifier: 0])
         isInit = true
 //        EYLoginSDKManager.isTestMode = isTestMode

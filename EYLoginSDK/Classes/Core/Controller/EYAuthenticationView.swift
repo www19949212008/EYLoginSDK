@@ -115,6 +115,7 @@ class EYAuthenticationView: FullScreenBaseView {
         whiteView.addConstraints([cnc1, cnc2, cnc3, cnc4])
 
         nameTextField = createTextField(placeHold: "真实姓名")
+        nameTextField.textColor = UIColor.black
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         cornerView.addSubview(nameTextField)
         let nc1 = NSLayoutConstraint(item: nameTextField, attribute: .top, relatedBy: .equal, toItem: cornerView, attribute: .top, multiplier: 1, constant: 0)
@@ -134,6 +135,7 @@ class EYAuthenticationView: FullScreenBaseView {
         cornerView.addConstraints([lc1, lc2, lc3, lc4])
 
         idTextField = createTextField(placeHold: "身份证号码")
+        idTextField.textColor = UIColor.black
         idTextField.translatesAutoresizingMaskIntoConstraints = false
         cornerView.addSubview(idTextField)
         let pc1 = NSLayoutConstraint(item: idTextField, attribute: .top, relatedBy: .equal, toItem: lineView, attribute: .bottom, multiplier: 1, constant: 0)
