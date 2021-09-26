@@ -21,7 +21,9 @@ open class EYLoginSDKManager: NSObject {
     public static var autoLogin = true
     
     var isInit = false
-    private var isNeedAccount = false
+    
+    //1--有版号正式版   2--申请版号  3--无游戏版号
+    var status = 3
     
     @objc open var loginState: Int {
         return UserDefaults.standard.integer(forKey: loginStateIdentifier)
@@ -30,7 +32,7 @@ open class EYLoginSDKManager: NSObject {
 //    var tryPresentLoginVcCount = 0
     open var needShowAuthView = false
     
-    private var showingVc: UIViewController?
+    var showingVc: UIViewController?
     private var showingView: FullScreenBaseView?
     
     @objc
@@ -64,11 +66,13 @@ open class EYLoginSDKManager: NSObject {
     
     private lazy var authView = EYAuthenticationView()
     
+    lazy var token = ""
+    
     @objc
-    open func initializeSDK(appkey: String, secretkey: String, isNeedAccount: Bool = false) {
+    open func initializeSDK(appkey: String, secretkey: String, status: Int = 3) {
         self.appkey = appkey
         self.secretkey = secretkey
-        self.isNeedAccount = isNeedAccount
+        self.status = status
         UserDefaults.standard.register(defaults: [loginStateIdentifier: 0])
         isInit = true
 //        EYLoginSDKManager.isTestMode = isTestMode
@@ -144,13 +148,13 @@ open class EYLoginSDKManager: NSObject {
 //            showingVc = loginVc
 //            vc.present(loginVc, animated: true) {
 //            }
-            if isNeedAccount {
-                showingView = EYLoginView()
-                showingView?.show()
-            } else {
+            if status == 3 {
                 needShowAuthView = false
                 authView.show()
                 self.delegate?.loginManagerDidShowLoginPage()
+            } else {
+                showingView = EYLoginView()
+                showingView?.show()
             }
         } else {
             needShowAuthView = true
@@ -164,9 +168,9 @@ open class EYLoginSDKManager: NSObject {
 //        if EYLoginSDKManager.isAnonymous {
 //            UserDefaults.standard.setValue(4, forKey: loginStateIdentifier)
 //        } else {
-            UserDefaults.standard.setValue(1, forKey: loginStateIdentifier)
+            
 //        }
-        UserDefaults.standard.synchronize()
+        self.token = UserDefaults.standard.string(forKey: token) ?? ""
         self.uid = UserDefaults.standard.string(forKey: userIdentifier) ?? ""
         self.isAdult = UserDefaults.standard.bool(forKey: isAdultIdentifier)
         delegate?.loginManagerDidLogin(loginState: loginState)
@@ -195,12 +199,11 @@ open class EYLoginSDKManager: NSObject {
         self.rootViewController?.present(showingVc!, animated: true, completion: nil)
     }
     
-//    func changeToAuthentication() {
-//        showingVc?.dismiss(animated: false, completion: nil)
-//        showingVc = EYAuthenticationViewController()
-//        showingVc?.modalPresentationStyle = .fullScreen
-//        rootViewController?.present(showingVc!, animated: false, completion: nil)
-//    }
+    func changeToAuthentication() {
+        showingView?.dismiss()
+        showingView = EYAuthenticationView()
+        showingView?.show()
+    }
     
     func startHeartbeat() {
         thread = Thread(target: self, selector: #selector(self.heartBeatThreadAction), object: nil)
@@ -216,8 +219,8 @@ open class EYLoginSDKManager: NSObject {
         timer = Timer(timeInterval: 60, repeats: true) { (_) in
             var url = ""
             let params: [String : Any]
-            params = ["appkey": EYLoginSDKManager.shared().appkey, "uid": self.uid, "v": "1.0"] as [String : Any]
-            url = "\(host)/heart"
+            params = ["uid": self.uid, "v": "1.0", "second": "60", "token": self.token] as [String : Any]
+            url = "\(requestHost)/heart"
             
             EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
                 if isSuccess {

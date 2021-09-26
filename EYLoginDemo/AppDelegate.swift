@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        EYLoginSDKManager.shared().initializeSDK(appkey: "inner001", secretkey: "0d99a984d4de2c7ec2f44901a4ae96b1")
+        EYLoginSDKManager.shared().initializeSDK(appkey: "inner001", secretkey: "0d99a984d4de2c7ec2f44901a4ae96b1", status: 2)
         return true
     }
 

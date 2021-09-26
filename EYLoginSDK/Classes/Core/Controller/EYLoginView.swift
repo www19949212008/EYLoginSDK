@@ -36,7 +36,7 @@ class EYLoginView: FullScreenBaseView {
         let cnc4 = NSLayoutConstraint(item: cornerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100+1/UIScreen.main.scale)
         whiteView.addConstraints([cnc1, cnc2, cnc3, cnc4])
         
-        nameTextField = createTextField(placeHold: "账号")
+        nameTextField = createTextField(placeHold: "账号：6-15位数字，字母和下划线")
         nameTextField.textColor = UIColor.black
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         cornerView.addSubview(nameTextField)
@@ -56,7 +56,7 @@ class EYLoginView: FullScreenBaseView {
         let lc4 = NSLayoutConstraint(item: lineView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 1/UIScreen.main.scale)
         cornerView.addConstraints([lc1, lc2, lc3, lc4])
 
-        passwordTextField = createTextField(placeHold: "身份证号码")
+        passwordTextField = createTextField(placeHold: "密码：6-15位数字，字母和下划线")
         passwordTextField.textColor = UIColor.black
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         passwordTextField.isSecureTextEntry = true
@@ -98,7 +98,7 @@ class EYLoginView: FullScreenBaseView {
         
         let wc1 = NSLayoutConstraint(item: whiteView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0)
         let wc2 = NSLayoutConstraint(item: whiteView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
-        let wc3 = NSLayoutConstraint(item: whiteView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.size.width-30)
+        let wc3 = NSLayoutConstraint(item: whiteView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: min(screenWidth-30, screenHeight-30))
         self.addConstraints([wc1, wc2, wc3])
         
         

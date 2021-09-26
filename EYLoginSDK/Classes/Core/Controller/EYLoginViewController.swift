@@ -68,12 +68,7 @@ class EYLoginViewController: EYLoginBaseViewController {
     func loginButtonAction() {
         let params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "deviceType": "ios", "deviceId": NSUUID().uuidString] as [String : Any]
         hud.showAnimatedHud()
-        var url = ""
-        if EYLoginSDKManager.isTestMode {
-            url = "\(testHost)/login"
-        } else {
-            url = "\(host)/login"
-        }
+        let url = "\(host)/login"
         EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
             if isSuccess {

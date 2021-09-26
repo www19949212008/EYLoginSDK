@@ -76,7 +76,7 @@ class FullScreenBaseView: UIView, UIGestureRecognizerDelegate {
     }
     
     override func layoutSubviews() {
-        if self.superview != nil {
+        if self.superview != nil && EYLoginSDKManager.shared().showingVc == nil {
             UIApplication.shared.keyWindow?.bringSubviewToFront(self)
         }
     }
@@ -172,7 +172,7 @@ class EYAuthenticationView: FullScreenBaseView {
         
         let wc1 = NSLayoutConstraint(item: whiteView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0)
         let wc2 = NSLayoutConstraint(item: whiteView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
-        let wc3 = NSLayoutConstraint(item: whiteView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.size.width-30)
+        let wc3 = NSLayoutConstraint(item: whiteView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: min(screenWidth-30, screenHeight-30))
         self.addConstraints([wc1, wc2, wc3])
 
         tipLabel.isUserInteractionEnabled = true
@@ -183,8 +183,6 @@ class EYAuthenticationView: FullScreenBaseView {
         idTextField.addTarget(self, action: #selector(self.textFieldDidChange(sender:)), for: .editingChanged)
         commitButton.addTarget(self, action: #selector(self.commitAction), for: .touchUpInside)
     }
-    
-    
     
     func createTextField(placeHold: String) -> UITextField {
         let textField = UITextField()
@@ -221,17 +219,20 @@ class EYAuthenticationView: FullScreenBaseView {
     }
     
     @objc func commitAction() {
-        let params = ["appkey": EYLoginSDKManager.shared().appkey, "idcard": idTextField.text ?? "", "realname": nameTextField.text ?? "", "deviceid": NSUUID().uuidString, "v":"1.0"] as [String : Any]
+        let params = ["idcard": idTextField.text ?? "", "realname": nameTextField.text ?? ""] as [String : Any]
         hud.showAnimatedHud()
-        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/auth", params: params) { (isSuccess, data, error) in
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/register", params: params) { (isSuccess, data, error) in
             self.hud.stopAnimatedHud()
             if isSuccess || data?["code"] as? Int == 1010  {
                 let d = data?["data"] as? [String: Any]
                 let isAdult = d?["adult"] as? Int == 0 ? false : true
                 let holidayArr = d?["holiday"] as? [String]
                 let uid = d?["uid"] as? String
+                let token = d?["token"] as? String
                 EYLoginSDKManager.shared().holidayArr = holidayArr
+                UserDefaults.standard.setValue(EYLoginState.logined, forKey: loginStateIdentifier)
                 UserDefaults.standard.setValue(uid, forKey: userIdentifier)
+                UserDefaults.standard.setValue(token, forKey: tokenIdentifier)
                 UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
                 UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
                 UserDefaults.standard.synchronize()

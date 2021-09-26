@@ -28,6 +28,11 @@ class EYNotificationController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.dismiss(animated: flag, completion: completion)
+        EYLoginSDKManager.shared().showingVc = nil
+    }
+    
     func setupUI() {
         view.backgroundColor = UIColor.white
         
@@ -56,10 +61,8 @@ class EYNotificationController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        if contentLabel.frame == CGRect.zero {
-            scrollView.layoutIfNeeded()
-        }
         scrollView.frame = view.bounds
+        scrollView.layoutIfNeeded()
         scrollView.contentSize = CGSize(width: 0, height: contentLabel.frame.maxY + 15)
     }
 }

@@ -98,7 +98,7 @@ class EYRegisterViewController: EYLoginBaseViewController {
         var params: [String : Any]
         var url = ""
         if EYLoginSDKManager.isTestMode {
-            url = "\(testHost)/register"
+            url = "\(requestHost)/register"
             params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "id_card": idTextField?.text ?? "", "realname": nameTextField?.text ?? "", "deviceType": "ios", "deviceId": NSUUID().uuidString]
         } else {
             url = "\(host)/user/register"
