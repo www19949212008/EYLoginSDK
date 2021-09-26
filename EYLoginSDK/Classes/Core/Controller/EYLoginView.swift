@@ -93,12 +93,24 @@ class EYLoginView: FullScreenBaseView {
         let trc2 = NSLayoutConstraint(item: toRegisterButton, attribute: .left, relatedBy: .equal, toItem: whiteView, attribute: .left, multiplier: 1, constant: 15)
         let trc3 = NSLayoutConstraint(item: toRegisterButton, attribute: .right, relatedBy: .equal, toItem: whiteView, attribute: .right, multiplier: 1, constant: -15)
         let trc4 = NSLayoutConstraint(item: toRegisterButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 50)
+        let tpc5 = NSLayoutConstraint(item: toRegisterButton, attribute: .bottom, relatedBy: .equal, toItem: whiteView, attribute: .bottom, multiplier: 1, constant: -15)
+        whiteView.addConstraints([trc1, trc2, trc3, trc4, tpc5])
+        
+        let wc1 = NSLayoutConstraint(item: whiteView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0)
+        let wc2 = NSLayoutConstraint(item: whiteView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
+        let wc3 = NSLayoutConstraint(item: whiteView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.size.width-30)
+        self.addConstraints([wc1, wc2, wc3])
         
         
         nameTextField.addTarget(self, action: #selector(self.textFieldDidChange(sender:)), for: .editingChanged)
         passwordTextField.addTarget(self, action: #selector(self.textFieldDidChange(sender:)), for: .editingChanged)
         toRegisterButton.addTarget(self, action: #selector(self.toRegisterButtonAction), for: .touchUpInside)
         loginButton.addTarget(self, action: #selector(self.loginButtonAction), for: .touchUpInside)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight)
     }
     
     func createTextField(placeHold: String) -> UITextField {

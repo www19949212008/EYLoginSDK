@@ -13,7 +13,11 @@ func debugLog<T>(message: T..., fileName: String = #file, funcName: String = #fu
     #endif
 }
 
-let screenWidth = UIScreen.main.bounds.size.width
-let screenHeight = UIScreen.main.bounds.size.height
+var screenWidth: CGFloat {
+    return UIScreen.main.bounds.size.width
+}
+var screenHeight: CGFloat {
+    return UIScreen.main.bounds.size.height
+}
 let buttonThemeColorNormol = UIColor(red: 0/255.0, green: 62/255.0, blue: 187/255.0, alpha: 1)
 let buttonThemeColorDisabled = UIColor.lightGray

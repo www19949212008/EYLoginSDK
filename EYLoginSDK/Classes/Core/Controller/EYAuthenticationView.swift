@@ -172,7 +172,7 @@ class EYAuthenticationView: FullScreenBaseView {
         
         let wc1 = NSLayoutConstraint(item: whiteView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0)
         let wc2 = NSLayoutConstraint(item: whiteView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
-        let wc3 = NSLayoutConstraint(item: whiteView, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: 1, constant: -30)
+        let wc3 = NSLayoutConstraint(item: whiteView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.size.width-30)
         self.addConstraints([wc1, wc2, wc3])
 
         tipLabel.isUserInteractionEnabled = true
@@ -183,6 +183,8 @@ class EYAuthenticationView: FullScreenBaseView {
         idTextField.addTarget(self, action: #selector(self.textFieldDidChange(sender:)), for: .editingChanged)
         commitButton.addTarget(self, action: #selector(self.commitAction), for: .touchUpInside)
     }
+    
+    
     
     func createTextField(placeHold: String) -> UITextField {
         let textField = UITextField()
@@ -244,5 +246,14 @@ class EYAuthenticationView: FullScreenBaseView {
                 debugLog(message: error.debugDescription)
             }
         }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+//        if UIDevice.current.orientation == .portrait || UIDevice.current.orientation == .portraitUpsideDown  {
+//            self.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight)
+//        } else {
+            self.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight)
+//        }
     }
 }
