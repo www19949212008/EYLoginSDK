@@ -291,6 +291,7 @@ class EYRegisterView: FullScreenBaseView {
                 if EYLoginSDKManager.shared().status == 2 {
                     let holidayArr = d?["holiday"] as? [String]
                     let isAdult = d?["adult"] as? Int == 0 ? false : true
+                    EYLoginSDKManager.shared().holidayArr = holidayArr
                     UserDefaults.standard.setValue(EYLoginState.logined.rawValue, forKey: loginStateIdentifier)
                     UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
                     UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)

@@ -52,11 +52,13 @@ open class EYLoginSDKManager: NSObject {
     open private(set) var appkey = ""
     open private(set) var secretkey = ""
     
+    @objc
     open private(set) var uid = ""
     
     private var thread: Thread?
     private var timer: Timer?
     
+    @objc
     open private(set) var isAdult: Bool = true
     
     var holidayArr: [String]?
@@ -257,6 +259,7 @@ open class EYLoginSDKManager: NSObject {
         RunLoop.current.run()
     }
     
+    @objc
     open func checkIsValidOnline() -> Bool {
         if self.isAdult {
             return true
