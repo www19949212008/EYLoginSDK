@@ -26,7 +26,8 @@ class EYNetworkService {
         p?["t"] = EYLoginSDKManager.shared().status
         p?["appkey"] = EYLoginSDKManager.shared().appkey
         p?["v"] = "1.0"
-        p?["s"] = instance.getSecretkey(params: params ?? [:])
+        let result = instance.getSecretkey(params: p ?? [:])
+        p?["s"] = result
         let request = NSMutableURLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 15)
         if method == .get {
             var i = 0

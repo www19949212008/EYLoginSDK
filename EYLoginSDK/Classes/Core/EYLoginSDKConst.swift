@@ -9,7 +9,7 @@ enum EYLoginState: Int {
     case notLogin = 0
     case logined = 1
     case registedNeedAuthentication = 2
-    case registed = 3
+//    case registed = 3
 //    case anonymousLogined = 4
 }
 

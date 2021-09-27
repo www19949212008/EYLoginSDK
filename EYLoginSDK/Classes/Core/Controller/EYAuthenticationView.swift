@@ -135,6 +135,7 @@ class EYAuthenticationView: FullScreenBaseView {
 
         idTextField = createTextField(placeHold: "身份证号码")
         idTextField.textColor = UIColor.black
+        idTextField.keyboardType = .asciiCapable
         idTextField.translatesAutoresizingMaskIntoConstraints = false
         cornerView.addSubview(idTextField)
         let pc1 = NSLayoutConstraint(item: idTextField, attribute: .top, relatedBy: .equal, toItem: lineView, attribute: .bottom, multiplier: 1, constant: 0)
@@ -204,6 +205,7 @@ class EYAuthenticationView: FullScreenBaseView {
     
     @objc
     func tipAction() {
+        self.endEditing(false)
         EYLoginSDKManager.shared().changeToNoti()
     }
     
@@ -219,6 +221,15 @@ class EYAuthenticationView: FullScreenBaseView {
     }
     
     @objc func commitAction() {
+        self.endEditing(false)
+        if EYLoginSDKManager.shared().status == 3 {
+            authLoginAction()
+        } else {
+            authAction()
+        }
+    }
+    
+    func authLoginAction() {
         let params = ["idcard": idTextField.text ?? "", "realname": nameTextField.text ?? ""] as [String : Any]
         hud.showAnimatedHud()
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/register", params: params) { (isSuccess, data, error) in
@@ -230,9 +241,36 @@ class EYAuthenticationView: FullScreenBaseView {
                 let uid = d?["uid"] as? String
                 let token = d?["token"] as? String
                 EYLoginSDKManager.shared().holidayArr = holidayArr
-                UserDefaults.standard.setValue(EYLoginState.logined, forKey: loginStateIdentifier)
+                UserDefaults.standard.setValue(EYLoginState.logined.rawValue, forKey: loginStateIdentifier)
                 UserDefaults.standard.setValue(uid, forKey: userIdentifier)
                 UserDefaults.standard.setValue(token, forKey: tokenIdentifier)
+                UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
+                UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
+                UserDefaults.standard.synchronize()
+                if data?["code"] as? Int == 1010 {
+                    EYLoginSDKManager.shared().loginSuccess(message: data?["message"] as? String ?? "根据国家防沉迷通知的相关要求，由于您是未成年人，仅能在周五、周六、周日及法定节假日20时至21时进入游戏")
+                } else {
+                    EYLoginSDKManager.shared().loginSuccess()
+                }
+            } else {
+                EYLoginSDKManager.shared().delegate?.loginManagerLoginWithError(error: error ?? NSError(domain: "LoginErrorDomain", code: data?["code"] as? Int ?? -1, userInfo: nil))
+                ProgressHud.showTextHud(data?["message"] as? String ?? "身份信息验证失败，请稍后重试")
+                debugLog(message: error.debugDescription)
+            }
+        }
+    }
+    
+    func authAction() {
+        let params = ["idcard": idTextField.text ?? "", "realname": nameTextField.text ?? "", "uid": EYLoginSDKManager.shared().uid, "token": EYLoginSDKManager.shared().token] as [String : Any]
+        hud.showAnimatedHud()
+        EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/auth", params: params) { (isSuccess, data, error) in
+            self.hud.stopAnimatedHud()
+            if isSuccess || data?["code"] as? Int == 1010  {
+                let d = data?["data"] as? [String: Any]
+                let isAdult = d?["adult"] as? Int == 0 ? false : true
+                let holidayArr = d?["holiday"] as? [String]
+                EYLoginSDKManager.shared().holidayArr = holidayArr
+                UserDefaults.standard.setValue(EYLoginState.logined.rawValue, forKey: loginStateIdentifier)
                 UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
                 UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
                 UserDefaults.standard.synchronize()

@@ -63,8 +63,8 @@ class ViewController: UIViewController, EYRechagerDelegate, EYLoginDelegate {
         print("查询失败：", error.debugDescription, message)
     }
     
-    func loginManagerDidUploadUserRechageInfo() {
-        print("上传成功")
+    func loginManagerDidUploadUserRechageInfo(rechargeInfo: [String : Any]) {
+        print("上传成功", rechargeInfo)
     }
     
     func loginManagerUploadUserRechageInfoWithError(error: Error?, message: String?) {

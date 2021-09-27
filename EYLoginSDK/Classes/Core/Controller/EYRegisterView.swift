@@ -62,6 +62,7 @@ class EYRegisterView: FullScreenBaseView {
         scrollView.addConstraints([cnc1, cnc2, cnc3, cnc4])
        
         accountTextField = createTextField(placeHold: "账号：6-15位数字，字母和下划线")
+        accountTextField.keyboardType = .asciiCapable
         cornerView.addSubview(accountTextField)
         let nc1 = NSLayoutConstraint(item: accountTextField, attribute: .top, relatedBy: .equal, toItem: cornerView, attribute: .top, multiplier: 1, constant: 0)
         let nc2 = NSLayoutConstraint(item: accountTextField, attribute: .left, relatedBy: .equal, toItem: cornerView, attribute: .left, multiplier: 1, constant: 0)
@@ -80,6 +81,8 @@ class EYRegisterView: FullScreenBaseView {
         cornerView.addConstraints([lc1, lc2, lc3, lc4])
 
         passwordTextField = createTextField(placeHold: "密码：6-15位数字，字母和下划线")
+        passwordTextField.isSecureTextEntry = true
+//        passwordTextField.keyboardType = .asciiCapable
         cornerView.addSubview(passwordTextField)
         let pc1 = NSLayoutConstraint(item: passwordTextField, attribute: .top, relatedBy: .equal, toItem: lineView, attribute: .bottom, multiplier: 1, constant: 0)
         let pc2 = NSLayoutConstraint(item: passwordTextField, attribute: .left, relatedBy: .equal, toItem: cornerView, attribute: .left, multiplier: 1, constant: 0)
@@ -98,6 +101,8 @@ class EYRegisterView: FullScreenBaseView {
         cornerView.addConstraints([lc21, lc22, lc23, lc24])
         
         re_passwordTextField = createTextField(placeHold: "请再次输入您的密码")
+        re_passwordTextField.isSecureTextEntry = true
+//        re_passwordTextField.keyboardType = .asciiCapable
         cornerView.addSubview(re_passwordTextField)
         let rc1 = NSLayoutConstraint(item: re_passwordTextField, attribute: .top, relatedBy: .equal, toItem: lineView2, attribute: .bottom, multiplier: 1, constant: 0)
         let rc2 = NSLayoutConstraint(item: re_passwordTextField, attribute: .left, relatedBy: .equal, toItem: cornerView, attribute: .left, multiplier: 1, constant: 0)
@@ -135,6 +140,7 @@ class EYRegisterView: FullScreenBaseView {
             cornerView.addConstraints([lc41, lc42, lc43, lc44])
             
             idTextField = createTextField(placeHold: "身份证号码")
+            idTextField.keyboardType = .asciiCapable
             cornerView.addSubview(idTextField)
             let ic1 = NSLayoutConstraint(item: idTextField, attribute: .top, relatedBy: .equal, toItem: lineView4, attribute: .bottom, multiplier: 1, constant: 0)
             let ic2 = NSLayoutConstraint(item: idTextField, attribute: .left, relatedBy: .equal, toItem: cornerView, attribute: .left, multiplier: 1, constant: 0)
@@ -147,7 +153,7 @@ class EYRegisterView: FullScreenBaseView {
         registerButton.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(registerButton)
         registerButton.backgroundColor = buttonThemeColorDisabled
-        registerButton.isEnabled = false
+//        registerButton.isEnabled = false
         registerButton.setTitle("注册", for: .normal)
         registerButton.layer.cornerRadius = 5
         registerButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: UIFont.Weight.bold)
@@ -206,6 +212,7 @@ class EYRegisterView: FullScreenBaseView {
     
     @objc
     func tipAction() {
+        self.endEditing(false)
         EYLoginSDKManager.shared().changeToNoti()
     }
     
@@ -257,36 +264,110 @@ class EYRegisterView: FullScreenBaseView {
     
     @objc
     func toLoginAction() {
+        self.endEditing(false)
         EYLoginSDKManager.shared().changeToLogin()
     }
     
     @objc
     func registerAction() {
-//        var params: [String : Any]
-//        var url = ""
-//        if EYLoginSDKManager.isTestMode {
-//            url = "\(testHost)/register"
-//            params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "id_card": idTextField?.text ?? "", "realname": nameTextField?.text ?? "", "deviceType": "ios", "deviceId": NSUUID().uuidString]
-//        } else {
-//            url = "\(host)/user/register"
-//            params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "deviceType": "ios", "deviceId": NSUUID().uuidString]
-//        }
-//        hud.showAnimatedHud()
-//        EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
-//            self.hud.stopAnimatedHud()
-//            if isSuccess {
-//                let d = data?["data"] as? [String: Any]
-//                let uid = d?["uid"] as? String
-//                let holidayArr = d?["holiday"] as? [String]
-//                UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
-//                UserDefaults.standard.setValue(uid, forKey: userIdentifier)
-//                    let isAdult = d?["adult"] as? Int == 0 ? false : true
-//                    UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
-//                    EYLoginSDKManager.shared().loginSuccess()
-//            } else {
-//                ProgressHud.showTextHud(data?["message"] as? String ?? "注册失败，请稍后重试")
-//                debugLog(message: "register error:", error.debugDescription)
-//            }
-//        }
+        self.endEditing(false)
+        var params: [String : Any]
+        let url = "\(requestHost)/register"
+        if EYLoginSDKManager.shared().status == 2 {
+            params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? "", "idcard": idTextField?.text ?? "", "realname": nameTextField?.text ?? ""]
+        } else {
+            params = ["username": accountTextField.text ?? "", "password": passwordTextField.text ?? ""]
+        }
+        hud.showAnimatedHud()
+        EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
+            self.hud.stopAnimatedHud()
+            if isSuccess {
+                let d = data?["data"] as? [String: Any]
+                let uid = d?["uid"] as? String
+                let token = d?["token"] as? String
+                UserDefaults.standard.setValue(uid, forKey: userIdentifier)
+                UserDefaults.standard.setValue(uid, forKey: userIdentifier)
+                UserDefaults.standard.setValue(token, forKey: tokenIdentifier)
+                if EYLoginSDKManager.shared().status == 2 {
+                    let holidayArr = d?["holiday"] as? [String]
+                    let isAdult = d?["adult"] as? Int == 0 ? false : true
+                    UserDefaults.standard.setValue(EYLoginState.logined.rawValue, forKey: loginStateIdentifier)
+                    UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
+                    UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
+                    UserDefaults.standard.synchronize()
+                    EYLoginSDKManager.shared().loginSuccess()
+                } else {
+                    UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
+                    UserDefaults.standard.synchronize()
+                    EYLoginSDKManager.shared().registerSuccess()
+                    EYLoginSDKManager.shared().changeToAuthentication()
+                }
+            } else {
+                ProgressHud.showTextHud(data?["message"] as? String ?? "注册失败，请稍后重试")
+                debugLog(message: "register error:", error.debugDescription)
+            }
+        }
     }
+}
+
+class NotifyView: UIView {
+//    var callBack: ((_ isAgree: Bool)->Void)?
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupUI() {
+        self.layer.cornerRadius = 5
+        backgroundColor = UIColor.white
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.text = "根据国家《关于防止未成年人沉迷网络游戏的通知》相关规定：\n1、网络游戏用户均须使用有效身份信息方可进行游戏账号注册。\n2、仅可在周五、周六、周日和法定节假日每日20时至21时向未成年人提供1小时网络游戏服务。\n3、不得为未满8周岁的用户提供游戏付费服务。同一网络游戏企业所提供的游戏付费服务，8周岁以上未满16周岁的用户，单次充值金额不得超过50元人民币，每月充值金额累计不得超过200元人民币；16周岁以上未满18周岁的用户，单次充值金额不得超过100元人民币，每月充值金额累计不得超过400元人民币。"
+        addSubview(label)
+        let sc1 = NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 15)
+        let sc2 = NSLayoutConstraint(item: label, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
+        let sc3 = NSLayoutConstraint(item: label, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -15)
+        self.addConstraints([sc1, sc2, sc3])
+        
+        let confirmButton = UIButton()
+        confirmButton.translatesAutoresizingMaskIntoConstraints = false
+        confirmButton.setTitle("确定", for: .normal)
+        confirmButton.setTitleColor(buttonThemeColorNormol, for: .normal)
+        confirmButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        addSubview(confirmButton)
+        let cc1 = NSLayoutConstraint(item: confirmButton, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: -10)
+        let cc2 = NSLayoutConstraint(item: confirmButton, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -15)
+//        let cc3 = NSLayoutConstraint(item: confirmButton, attribute: .top, relatedBy: .equal, toItem: label, attribute: .bottom, multiplier: 1, constant: 15)
+        self.addConstraints([cc1, cc2])
+        
+//        let cacelButton = UIButton()
+//        cacelButton.translatesAutoresizingMaskIntoConstraints = false
+//        cacelButton.setTitle("取消", for: .normal)
+//        cacelButton.setTitleColor(UIColor.black, for: .normal)
+//        cacelButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+//        addSubview(cacelButton)
+//        let cac1 = NSLayoutConstraint(item: cacelButton, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: -10)
+//        let cac2 = NSLayoutConstraint(item: cacelButton, attribute: .right, relatedBy: .equal, toItem: confirmButton, attribute: .left, multiplier: 1, constant: -15)
+//        self.addConstraints([cac1, cac2])
+        
+        confirmButton.addTarget(self, action: #selector(self.confirmAction), for: .touchUpInside)
+//        cacelButton.addTarget(self, action: #selector(self.cancelAction), for: .touchUpInside)
+    }
+    
+    @objc func confirmAction() {
+        self.removeFromSuperview()
+//        self.callBack?(true)
+    }
+    
+//    @objc func cancelAction() {
+//        self.removeFromSuperview()
+//        self.callBack?(false)
+//    }
 }

@@ -57,14 +57,11 @@ open class EYLoginSDKManager: NSObject {
     private var thread: Thread?
     private var timer: Timer?
     
-    public static var isTestMode = false
-    public static var isAnonymous = false
-    
-    var isAdult: Bool = true
+    open private(set) var isAdult: Bool = true
     
     var holidayArr: [String]?
     
-    private lazy var authView = EYAuthenticationView()
+//    private lazy var authView = EYAuthenticationView()
     
     lazy var token = ""
     
@@ -108,53 +105,62 @@ open class EYLoginSDKManager: NSObject {
     
     @objc
     open func login() {
+        if isInit == false {
+            return
+        }
         var state = loginState
         let uid = UserDefaults.standard.string(forKey: userIdentifier)
         if uid?.count ?? 0 == 0 {
             UserDefaults.standard.setValue(EYLoginState.notLogin.rawValue, forKey: loginStateIdentifier)
             state = EYLoginState.notLogin.rawValue
         }
-//        if state == EYLoginState.anonymousLogined.rawValue {
-//            EYLoginSDKManager.isAnonymous = true
-//        }
+        let token = UserDefaults.standard.string(forKey: tokenIdentifier)
+        if token?.count ?? 0 == 0 {
+            UserDefaults.standard.setValue(EYLoginState.notLogin.rawValue, forKey: loginStateIdentifier)
+            state = EYLoginState.notLogin.rawValue
+        }
         delegate?.loginManagerDidGetLoginState(loginState: state)
         switch state {
         case EYLoginState.notLogin.rawValue:
             showLoginPage()
         case EYLoginState.logined.rawValue:
             self.uid = uid ?? ""
+            self.token = token ?? ""
+            self.isAdult = UserDefaults.standard.bool(forKey: isAdultIdentifier)
             startHeartbeat()
             delegate?.loginManagerDidLogin(loginState: loginState)
-//        case EYLoginState.registed.rawValue:
-//            showLoginPage()
-//        case EYLoginState.registedNeedAuthentication.rawValue:
-//            showLoginPage()
+        case EYLoginState.registedNeedAuthentication.rawValue:
+            self.uid = uid ?? ""
+            self.token = token ?? ""
+            showLoginPage()
         default:
             break
         }
     }
     
     open func showLoginPage() {
-//        delegate?.loginManagerWillShowLoginPage()
         if UIApplication.shared.keyWindow != nil || UIApplication.shared.windows.count != 0 {
-//            rootViewController = vc
-//            var loginVc: UIViewController
-//            if loginState == EYLoginState.registedNeedAuthentication.rawValue {
-//                loginVc = EYAuthenticationViewController()
-//            } else {
-//                loginVc = EYLoginViewController()
-//            }
-//            loginVc.modalPresentationStyle = .fullScreen
-//            showingVc = loginVc
-//            vc.present(loginVc, animated: true) {
-//            }
-            if status == 3 {
-                needShowAuthView = false
-                authView.show()
-                self.delegate?.loginManagerDidShowLoginPage()
-            } else {
-                showingView = EYLoginView()
+            if loginState == EYLoginState.registedNeedAuthentication.rawValue {
+                showingView = EYAuthenticationView()
                 showingView?.show()
+            } else {
+                if status == 3 {
+                    needShowAuthView = false
+                    showingView = EYAuthenticationView()
+                    showingView?.layoutIfNeeded()
+                    showingView?.show()
+                    let v = NotifyView()
+                    v.frame = showingView!.whiteView.bounds
+                    showingView!.whiteView.addSubview(v)
+                    self.delegate?.loginManagerDidShowLoginPage()
+                } else {
+                    showingView = EYLoginView()
+                    showingView?.layoutIfNeeded()
+                    showingView?.show()
+                    let v = NotifyView()
+                    v.frame = showingView!.whiteView.bounds
+                    showingView!.whiteView.addSubview(v)
+                }
             }
         } else {
             needShowAuthView = true
@@ -162,15 +168,9 @@ open class EYLoginSDKManager: NSObject {
     }
     
     func loginSuccess(message: String? = nil) {
-        authView.dismiss()
-//        showingVc?.dismiss(animated: true, completion: nil)
-//        showingVc = nil
-//        if EYLoginSDKManager.isAnonymous {
-//            UserDefaults.standard.setValue(4, forKey: loginStateIdentifier)
-//        } else {
-            
-//        }
-        self.token = UserDefaults.standard.string(forKey: token) ?? ""
+        showingView?.dismiss()
+        showingView = nil
+        self.token = UserDefaults.standard.string(forKey: tokenIdentifier) ?? ""
         self.uid = UserDefaults.standard.string(forKey: userIdentifier) ?? ""
         self.isAdult = UserDefaults.standard.bool(forKey: isAdultIdentifier)
         delegate?.loginManagerDidLogin(loginState: loginState)
@@ -179,6 +179,11 @@ open class EYLoginSDKManager: NSObject {
         } else {
             startHeartbeat()
         }
+    }
+    
+    func registerSuccess() {
+        self.token = UserDefaults.standard.string(forKey: tokenIdentifier) ?? ""
+        self.uid = UserDefaults.standard.string(forKey: userIdentifier) ?? ""
     }
     
     func changeToRigister() {
@@ -240,7 +245,7 @@ open class EYLoginSDKManager: NSObject {
                     default:
                         break
                     }
-                } else {
+                } else if (data == nil) {
                     if !self.checkIsValidOnline() {
                         self.showExitAlert()
                     }
@@ -304,24 +309,6 @@ open class EYLoginSDKManager: NSObject {
         rootViewController?.present(vc, animated: true, completion: nil)
     }
     
-//    func showAuthAlert() {
-//        let vc = UIAlertController(title: nil, message: "您还未进行实名认证，请先进行实名认证", preferredStyle: .alert)
-//        let action = UIAlertAction(title: "确定", style: .default) { (_) in
-//            self.changeToAuthentication()
-//        }
-//        vc.addAction(action)
-//        rootViewController?.present(vc, animated: true, completion: nil)
-//    }
-//
-//    func showLoginAlert() {
-//        let vc = UIAlertController(title: nil, message: "登陆信息验证失败，请重新登录", preferredStyle: .alert)
-//        let action = UIAlertAction(title: "确定", style: .default) { (_) in
-//            self.changeToLogin()
-//        }
-//        vc.addAction(action)
-//        rootViewController?.present(vc, animated: true, completion: nil)
-//    }
-    
 //    @objc
 //    open func logOut() {
 //        if loginState != 1 {
@@ -374,11 +361,11 @@ open class EYLoginSDKManager: NSObject {
     
     @objc
     open func queryUserRechage() {
-        let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey] as [String : Any]
+        let params = ["uid": self.uid, "token": self.token] as [String : Any]
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/getMonthRecharge", params: params) { (isSuccess, data, error) in
             if isSuccess {
                 let mapData = data?["data"] as? [String: Any]
-                let  single_recharge = mapData?["singleRechargeLimit"] as? Int ?? -1
+                let single_recharge = mapData?["singleRechargeLimit"] as? Int ?? -1
                 let month_recharge = mapData?["monthRechargeLimit"] as? Int ?? -1
                 let month_recharge_total = mapData?["monthRecharged"] as? Int ?? -1
                 let info = ["singleRecharge": single_recharge, "monthRecharge": month_recharge, "monthRechargeTotal": month_recharge_total] as [String: Any]
@@ -391,10 +378,15 @@ open class EYLoginSDKManager: NSObject {
     
     @objc
     open func uploadUserRechageInfo(rechargeMoney: Int) {
-        let params = ["uid": UserDefaults.standard.integer(forKey: userIdentifier), "appkey": EYLoginSDKManager.shared().appkey, "recharge_money": rechargeMoney] as [String : Any]
+        let params = ["uid": self.uid, "token": self.token, "recharge_money": rechargeMoney] as [String : Any]
         EYNetworkService.sendRequstWith(method: .post, urlString: "\(requestHost)/recharge", params: params) { (isSuccess, data, error) in
             if isSuccess {
-                self.rechagerDelegate?.loginManagerDidUploadUserRechageInfo()
+                let mapData = data?["data"] as? [String: Any]
+                let single_recharge = mapData?["singleRechargeLimit"] as? Int ?? -1
+                let month_recharge = mapData?["monthRechargeLimit"] as? Int ?? -1
+                let month_recharge_total = mapData?["monthRecharged"] as? Int ?? -1
+                let info = ["singleRecharge": single_recharge, "monthRecharge": month_recharge, "monthRechargeTotal": month_recharge_total] as [String: Any]
+                self.rechagerDelegate?.loginManagerDidUploadUserRechageInfo(rechargeInfo: info)
             } else {
                 self.rechagerDelegate?.loginManagerUploadUserRechageInfoWithError(error: error, message: data?["message"] as? String)
             }

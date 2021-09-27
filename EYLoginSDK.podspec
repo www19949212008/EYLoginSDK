@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
     #s.prefix_header_file = 'EyuLibrary-ios/Classes/PrefixHeader.pch'
     s.ios.deployment_target = '10.0'
     s.static_framework = true
-    
+      
     s.subspec 'Core' do |c|
         c.source_files = 'EYLoginSDK/Classes/Core/**/*'
     end

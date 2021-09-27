@@ -20,6 +20,6 @@ public protocol EYLoginDelegate: AnyObject {
 public protocol EYRechagerDelegate: AnyObject {
     func loginManagerDidGetUserRechageInfo(rechargeInfo: [String: Any])
     func loginManagerGetUserRechageInfoWithError(error: Error?, message: String?)
-    func loginManagerDidUploadUserRechageInfo()
+    func loginManagerDidUploadUserRechageInfo(rechargeInfo: [String: Any])
     func loginManagerUploadUserRechageInfoWithError(error: Error?, message: String?)
 }

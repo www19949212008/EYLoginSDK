@@ -17,12 +17,8 @@
 		07A267AE26FB3B4400BC5513 /* EYAuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A267AD26FB3B4400BC5513 /* EYAuthenticationView.swift */; };
 		07A267B026FC57A300BC5513 /* EYNotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A267AF26FC57A300BC5513 /* EYNotificationController.swift */; };
 		0A507D84570211545B3F7F9AC176D6D5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
-		5A6613D19457132198249E5DAF4B7496 /* EYLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB1FA8D79D7D163F5674900D487B7CF /* EYLoginViewController.swift */; };
-		6C00D041E1495F11CAD2B40B22664110 /* EYAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198D87F9C4C2AB9B1EC0E2D14A043F30 /* EYAuthenticationViewController.swift */; };
 		6C363AF428ED2A86D8B2C967852B47AF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		725195A1F7EB3A6069E8FF77E656F65A /* Pods-EYLoginDemo-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 87F0C15E72721CF65123019F27CB80C2 /* Pods-EYLoginDemo-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7638E23FDF27023FDB31B4D89EC2F65A /* EYRegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233C18C42F2D539A10221B8AF7DFDC31 /* EYRegisterViewController.swift */; };
-		7CFA1F924A0D4D3C19181D6372743E77 /* EYLoginBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C03FB000A91EBEAA3D408B0C28ED0DB /* EYLoginBaseViewController.swift */; };
 		80F26C256A90422D36FB4184FC66F26E /* EYLoginSDK-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FAEDF7DB0C50F23CB85143203718990 /* EYLoginSDK-dummy.m */; };
 		8BCBC60D476A103FE438B813857FE3E1 /* EYLoginDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C4465280C9E6F0C2EA81B05B115014 /* EYLoginDelegate.swift */; };
 		AEB540A85E64970A692F0749567C113B /* Pods-EYLoginDemo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EEFADAA8B89B559A965AAEF231605D2 /* Pods-EYLoginDemo-dummy.m */; };
@@ -52,15 +48,11 @@
 		079D5975260B24D200FFCE3B /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		07A267AD26FB3B4400BC5513 /* EYAuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EYAuthenticationView.swift; sourceTree = "<group>"; };
 		07A267AF26FC57A300BC5513 /* EYNotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EYNotificationController.swift; sourceTree = "<group>"; };
-		198D87F9C4C2AB9B1EC0E2D14A043F30 /* EYAuthenticationViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EYAuthenticationViewController.swift; sourceTree = "<group>"; };
 		1E65A28779C4A54A110D8CF6B257633C /* EYLoginSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "EYLoginSDK-Info.plist"; sourceTree = "<group>"; };
 		2045FA2706C41AE560AA6C4744FD666F /* EYLoginSDK-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EYLoginSDK-umbrella.h"; sourceTree = "<group>"; };
-		233C18C42F2D539A10221B8AF7DFDC31 /* EYRegisterViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EYRegisterViewController.swift; sourceTree = "<group>"; };
-		2EB1FA8D79D7D163F5674900D487B7CF /* EYLoginViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EYLoginViewController.swift; sourceTree = "<group>"; };
 		2FAEDF7DB0C50F23CB85143203718990 /* EYLoginSDK-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EYLoginSDK-dummy.m"; sourceTree = "<group>"; };
 		35997344ED46FFBBC3E82E057517A41E /* Pods-EYLoginDemo.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-EYLoginDemo.modulemap"; sourceTree = "<group>"; };
 		4967BE098B8C4F0274D2BD2B86A0A4FD /* EYLoginSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EYLoginSDK.debug.xcconfig; sourceTree = "<group>"; };
-		4C03FB000A91EBEAA3D408B0C28ED0DB /* EYLoginBaseViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EYLoginBaseViewController.swift; sourceTree = "<group>"; };
 		4D1183756C8917F655A48DF978519BC6 /* Pods-EYLoginDemo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-EYLoginDemo-acknowledgements.markdown"; sourceTree = "<group>"; };
 		4EEFADAA8B89B559A965AAEF231605D2 /* Pods-EYLoginDemo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-EYLoginDemo-dummy.m"; sourceTree = "<group>"; };
 		556FE9D5742024B91A2A0534F1B00699 /* EYLoginSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EYLoginSDK-prefix.pch"; sourceTree = "<group>"; };
@@ -133,10 +125,6 @@
 		3BAA791DA44F1D1CBF3CC9CEB1AC013F /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				198D87F9C4C2AB9B1EC0E2D14A043F30 /* EYAuthenticationViewController.swift */,
-				4C03FB000A91EBEAA3D408B0C28ED0DB /* EYLoginBaseViewController.swift */,
-				2EB1FA8D79D7D163F5674900D487B7CF /* EYLoginViewController.swift */,
-				233C18C42F2D539A10221B8AF7DFDC31 /* EYRegisterViewController.swift */,
 				07A267AD26FB3B4400BC5513 /* EYAuthenticationView.swift */,
 				072AFBD726FDD9BF00529BCA /* EYLoginView.swift */,
 				072AFBD926FDDF4700529BCA /* EYRegisterView.swift */,
@@ -359,21 +347,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C00D041E1495F11CAD2B40B22664110 /* EYAuthenticationViewController.swift in Sources */,
-				7CFA1F924A0D4D3C19181D6372743E77 /* EYLoginBaseViewController.swift in Sources */,
 				079D596E260ADDF600FFCE3B /* EYNetworkService.swift in Sources */,
 				07A267B026FC57A300BC5513 /* EYNotificationController.swift in Sources */,
 				8BCBC60D476A103FE438B813857FE3E1 /* EYLoginDelegate.swift in Sources */,
 				80F26C256A90422D36FB4184FC66F26E /* EYLoginSDK-dummy.m in Sources */,
 				079D5972260AEA8C00FFCE3B /* EYUrlRequestHandler.swift in Sources */,
 				B3D7246109A7155D73EC4E4D4A45A343 /* EYLoginSDKManager.swift in Sources */,
-				5A6613D19457132198249E5DAF4B7496 /* EYLoginViewController.swift in Sources */,
 				0762E5BD2611D49D005A8AA8 /* EYLoginSDKConst.swift in Sources */,
 				079D5976260B24D200FFCE3B /* Common.swift in Sources */,
 				07A267AE26FB3B4400BC5513 /* EYAuthenticationView.swift in Sources */,
 				072AFBD826FDD9BF00529BCA /* EYLoginView.swift in Sources */,
 				072AFBDA26FDDF4700529BCA /* EYRegisterView.swift in Sources */,
-				7638E23FDF27023FDB31B4D89EC2F65A /* EYRegisterViewController.swift in Sources */,
 				0762E5B92611D481005A8AA8 /* ProgressHud.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

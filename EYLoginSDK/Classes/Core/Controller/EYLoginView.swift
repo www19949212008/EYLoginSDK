@@ -39,6 +39,7 @@ class EYLoginView: FullScreenBaseView {
         nameTextField = createTextField(placeHold: "账号：6-15位数字，字母和下划线")
         nameTextField.textColor = UIColor.black
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
+        nameTextField.keyboardType = .asciiCapable
         cornerView.addSubview(nameTextField)
         let nc1 = NSLayoutConstraint(item: nameTextField, attribute: .top, relatedBy: .equal, toItem: cornerView, attribute: .top, multiplier: 1, constant: 0)
         let nc2 = NSLayoutConstraint(item: nameTextField, attribute: .left, relatedBy: .equal, toItem: cornerView, attribute: .left, multiplier: 1, constant: 0)
@@ -60,7 +61,7 @@ class EYLoginView: FullScreenBaseView {
         passwordTextField.textColor = UIColor.black
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         passwordTextField.isSecureTextEntry = true
-        passwordTextField.keyboardType = .asciiCapable
+//        passwordTextField.keyboardType = .asciiCapable
         cornerView.addSubview(passwordTextField)
         let pc1 = NSLayoutConstraint(item: passwordTextField, attribute: .top, relatedBy: .equal, toItem: lineView, attribute: .bottom, multiplier: 1, constant: 0)
         let pc2 = NSLayoutConstraint(item: passwordTextField, attribute: .left, relatedBy: .equal, toItem: cornerView, attribute: .left, multiplier: 1, constant: 0)
@@ -123,6 +124,7 @@ class EYLoginView: FullScreenBaseView {
         textField.borderStyle = .none
         textField.tintColor = UIColor.black
         textField.backgroundColor = UIColor.white
+        textField.textColor = UIColor.black
         return textField
     }
     
@@ -139,36 +141,45 @@ class EYLoginView: FullScreenBaseView {
     
     @objc
     func loginButtonAction() {
-//        let params = ["username": nameTextField.text ?? "", "password": passwordTextField.text ?? "", "appkey": EYLoginSDKManager.shared().appkey, "deviceType": "ios", "deviceId": NSUUID().uuidString] as [String : Any]
-//        hud.showAnimatedHud()
-//        var url = ""
-//        if EYLoginSDKManager.isTestMode {
-//            url = "\(testHost)/login"
-//        } else {
-//            url = "\(host)/login"
-//        }
-//        EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
-//            self.hud.stopAnimatedHud()
-//            if isSuccess {
-//                EYLoginSDKManager.isAnonymous = false
-//                let d = data?["data"] as? [String: Any]
-//                let uid = d?["uid"] as? String
-//                let holidayArr = d?["holiday"] as? [String]
-//                UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
-//                UserDefaults.standard.setValue(uid, forKey: userIdentifier)
-//                    let isAdult = d?["adult"] as? Int == 0 ? false : true
-//                    UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
-//                    UserDefaults.standard.synchronize()
-//                    EYLoginSDKManager.shared().loginSuccess()
-//            } else {
-//                ProgressHud.showTextHud(data?["message"] as? String ?? "登陆失败，请稍后重试")
-//                debugLog(message: "login error:", error.debugDescription)
-//            }
-//        }
+        self.endEditing(false)
+        let params = ["username": nameTextField.text ?? "", "password": passwordTextField.text ?? ""] as [String : Any]
+        hud.showAnimatedHud()
+        let url = "\(requestHost)/login"
+        EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
+            self.hud.stopAnimatedHud()
+            let code = data?["code"] as? Int
+            if isSuccess || code == 1010 || code == 1011 {
+                let d = data?["data"] as? [String: Any]
+                let uid = d?["uid"] as? String
+                let holidayArr = d?["holiday"] as? [String]
+                let token = d?["token"] as? String
+                EYLoginSDKManager.shared().holidayArr = holidayArr
+                UserDefaults.standard.setValue(EYLoginState.logined.rawValue, forKey: loginStateIdentifier)
+                UserDefaults.standard.setValue(holidayArr, forKey: holidayIdentifier)
+                UserDefaults.standard.setValue(token, forKey: tokenIdentifier)
+                UserDefaults.standard.setValue(uid, forKey: userIdentifier)
+                let isAdult = d?["adult"] as? Int == 0 ? false : true
+                UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
+                UserDefaults.standard.synchronize()
+                if code == 1010 {
+                    EYLoginSDKManager.shared().loginSuccess(message: data?["message"] as? String ?? "根据国家防沉迷通知的相关要求，由于您是未成年人，仅能在周五、周六、周日及法定节假日20时至21时进入游戏")
+                } else if code == 1011 {
+                    UserDefaults.standard.setValue(EYLoginState.registedNeedAuthentication.rawValue, forKey: loginStateIdentifier)
+                    EYLoginSDKManager.shared().registerSuccess()
+                    EYLoginSDKManager.shared().changeToAuthentication()
+                } else {
+                    EYLoginSDKManager.shared().loginSuccess()
+                }
+            } else {
+                ProgressHud.showTextHud(data?["message"] as? String ?? "登陆失败，请稍后重试")
+                debugLog(message: "login error:", error.debugDescription)
+            }
+        }
     }
     
     @objc
     func toRegisterButtonAction() {
+        self.endEditing(false)
         EYLoginSDKManager.shared().changeToRigister()
     }
 }
