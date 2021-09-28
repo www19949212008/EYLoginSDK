@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = 'EYLoginSDK'
-    s.version          = '1.4.4'
+    s.version          = '1.4.5'
     s.summary          = 'A short description of EYLoginSDK.'
     s.swift_version = '5.0'
     # This description is used to generate tags and improve search results.

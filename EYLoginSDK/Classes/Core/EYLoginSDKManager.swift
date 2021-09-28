@@ -347,7 +347,7 @@ open class EYLoginSDKManager: NSObject {
     
     func invalidBackgroundThread() {
         if let t = thread {
-            self.perform(#selector(self.exitThread), on: t, with: nil, waitUntilDone: true)
+            self.perform(#selector(self.exitThread), on: t, with: nil, waitUntilDone: false)
             thread = nil
         }
         timer?.invalidate()
@@ -366,7 +366,7 @@ open class EYLoginSDKManager: NSObject {
     
     @objc func exitThread() {
         CFRunLoopStop(RunLoop.current.getCFRunLoop())
-//        Thread.exit()
+        Thread.exit()
     }
     
     @objc
