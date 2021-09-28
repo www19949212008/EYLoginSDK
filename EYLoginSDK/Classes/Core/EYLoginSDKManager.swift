@@ -32,6 +32,8 @@ open class EYLoginSDKManager: NSObject {
 //    var tryPresentLoginVcCount = 0
     open var needShowAuthView = false
     
+    open var needPresent = false
+    
     var showingVc: UIViewController?
     private var showingView: FullScreenBaseView?
     
@@ -40,6 +42,9 @@ open class EYLoginSDKManager: NSObject {
         didSet {
             if needShowAuthView {
                 self.showLoginPage()
+            }
+            if needPresent {
+                self.showExitAlert()
             }
         }
     }
@@ -230,8 +235,8 @@ open class EYLoginSDKManager: NSObject {
             url = "\(requestHost)/heart"
             
             EYNetworkService.sendRequstWith(method: .post, urlString: url, params: params) { (isSuccess, data, error) in
-                if isSuccess {
-                    let code = data?["code"] as? Int
+                let code = data?["code"] as? Int
+                if isSuccess || code == 1010 {
                     let message = data?["message"] as? String
                     let d = data?["data"] as? [String: Any]
                     let holidayArr = d?["holiday"] as? [String]
@@ -240,12 +245,9 @@ open class EYLoginSDKManager: NSObject {
                         UserDefaults.standard.set(isAdult, forKey: isAdultIdentifier)
                     }
                     self.holidayArr = holidayArr
-                    switch code {
-                    case 1010:
+                    if code == 1010 {
                         self.invalidBackgroundThread()
                         self.showExitAlert(message: message)
-                    default:
-                        break
                     }
                 } else if (data == nil) {
                     if !self.checkIsValidOnline() {
@@ -309,7 +311,12 @@ open class EYLoginSDKManager: NSObject {
             }
         }
         vc.addAction(action)
-        rootViewController?.present(vc, animated: true, completion: nil)
+        if rootViewController == nil {
+            needPresent = true
+        } else {
+            rootViewController?.present(vc, animated: true, completion: nil)
+            needPresent = false
+        }
     }
     
 //    @objc
@@ -359,7 +366,7 @@ open class EYLoginSDKManager: NSObject {
     
     @objc func exitThread() {
         CFRunLoopStop(RunLoop.current.getCFRunLoop())
-        Thread.exit()
+//        Thread.exit()
     }
     
     @objc
