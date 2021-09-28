@@ -329,6 +329,7 @@ class NotifyView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
+        label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 14)
         label.text = "根据国家《关于防止未成年人沉迷网络游戏的通知》相关规定：\n1、网络游戏用户均须使用有效身份信息方可进行游戏账号注册。\n2、仅可在周五、周六、周日和法定节假日每日20时至21时向未成年人提供1小时网络游戏服务。\n3、不得为未满8周岁的用户提供游戏付费服务。同一网络游戏企业所提供的游戏付费服务，8周岁以上未满16周岁的用户，单次充值金额不得超过50元人民币，每月充值金额累计不得超过200元人民币；16周岁以上未满18周岁的用户，单次充值金额不得超过100元人民币，每月充值金额累计不得超过400元人民币。"
         addSubview(label)
