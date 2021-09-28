@@ -191,6 +191,7 @@ class EYAuthenticationView: FullScreenBaseView {
         textField.leftView = paddingView
         textField.leftViewMode = .always
         textField.placeholder = placeHold
+        textField.attributedPlaceholder = NSAttributedString(string: placeHold, attributes: [.foregroundColor: UIColor.gray])
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.borderStyle = .none
         textField.tintColor = UIColor.black

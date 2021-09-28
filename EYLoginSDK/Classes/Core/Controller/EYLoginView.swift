@@ -119,7 +119,7 @@ class EYLoginView: FullScreenBaseView {
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 45))
         textField.leftView = paddingView
         textField.leftViewMode = .always
-        textField.placeholder = placeHold
+        textField.attributedPlaceholder = NSAttributedString(string: placeHold, attributes: [.foregroundColor: UIColor.gray])
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.borderStyle = .none
         textField.tintColor = UIColor.black

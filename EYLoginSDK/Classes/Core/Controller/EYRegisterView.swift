@@ -222,7 +222,7 @@ class EYRegisterView: FullScreenBaseView {
         textField.leftView = paddingView
         textField.leftViewMode = .always
         textField.textColor = UIColor.black
-        textField.placeholder = placeHold
+        textField.attributedPlaceholder = NSAttributedString(string: placeHold, attributes: [.foregroundColor: UIColor.gray])
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.borderStyle = .none
